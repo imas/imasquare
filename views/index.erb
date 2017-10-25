@@ -1,0 +1,9 @@
+Hello, world!!
+
+<% if current_user %>
+  <img src="<%= current_user['avatar_url'] %>" alt="<%= current_user['nickname']%>"/>
+  <br />
+  Hello, <%= current_user['nickname'] %> <a href='/auth/slack/destroy'>Logout</a>
+<% else %>
+  <a href='/auth/slack'>Login with slack</a>
+<% end %>

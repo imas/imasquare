@@ -1,0 +1,7 @@
+CREATE TABLE users (
+  id VARCHAR(31) NOT NULL PRIMARY KEY,
+  nickname VARCHAR(127) UNIQUE,
+  avatar_url VARCHAR(254) UNIQUE,
+  created_at DATETIME NOT NULL,
+  updated_at DATETIME NOT NULL
+) Engine=InnoDB DEFAULT CHARSET=utf8mb4;
