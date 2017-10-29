@@ -46,7 +46,11 @@ class Imasquare < Sinatra::Base
   end
 
   get '/' do
-    erb :index
+    if current_user
+      erb :index
+    else
+      erb :lp
+    end
   end
 
   get '/auth/slack/callback' do
