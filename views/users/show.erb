@@ -1,0 +1,17 @@
+<h1>プロフィール詳細</h1>
+
+<ul>
+  <li><%= @user['nickname'] %></li>
+  <li>所属しているチーム
+    <ul>
+      <% @user_teams.each do |team| %>
+        <li>
+          <a href='/teams/<%= team['id']%>'><%= team['name'] %></a>
+          <% if team['role'] == 'leader' %>
+            (代表者)
+          <% end %>
+        </li>
+      <% end %>
+    </ul>
+  </li>
+</ul>

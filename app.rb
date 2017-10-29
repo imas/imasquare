@@ -61,6 +61,18 @@ class Imasquare < Sinatra::Base
     end
   end
 
+  get '/users/:user_id' do
+    @user = db.xquery('SELECT nickname, avatar_url FROM users WHERE id = ? LIMIT 1', params['user_id']).first
+    query = <<~SQL
+      SELECT teams.id, teams.name, ut.role FROM users
+      INNER JOIN users_teams AS ut ON users.id = ut.user_id
+      INNER JOIN teams ON ut.team_id = teams.id
+      WHERE users.id = ?
+    SQL
+    @user_teams = db.xquery(query, params['user_id'])
+    erb 'users/show'.to_sym
+  end
+
   get '/teams' do
     redirect '/', 303
   end

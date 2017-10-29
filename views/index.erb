@@ -1,6 +1,6 @@
 <h1>IM@Square</h1>
 
-<p><img src="<%= current_user['avatar_url'] %>" style='width: 1.2em; height: 1.2em;' alt="<%= current_user['nickname']%>"/><%= current_user['nickname'] %>としてログインしています。<a href='/auth/slack/destroy'>ログアウト</a></p>
+<p><a href='/users/<%= current_user['id']%>'><img src="<%= current_user['avatar_url'] %>" style='width: 1.2em; height: 1.2em;' alt="<%= current_user['nickname']%>"/><%= current_user['nickname'] %></a>としてログインしています。<a href='/auth/slack/destroy'>ログアウト</a></p>
 
 <h2>メニュー</h2>
 
@@ -12,6 +12,6 @@
 
 <ul>
   <% @teams.each do |team| %>
-    <li><a href="/teams/<%= team['id']%>"><%= team['name'] %></a> (<%= team['leader_name'] %>)</li>
+    <li><a href="/teams/<%= team['id']%>"><%= team['name'] %></a> (<a href='/users/<%= team['leader_id'] %>'><%= team['leader_name'] %></a>)</li>
   <% end %>
 </ul>
