@@ -49,10 +49,55 @@ class Imasquare < Sinatra::Base
 
   get '/' do
     if current_user
+      query = <<~SQL
+        SELECT teams.id, teams.name, users.id AS leader_id, users.nickname AS leader_name FROM teams
+        INNER JOIN users_teams AS ut ON teams.id = ut.team_id AND ut.role = 'leader'
+        INNER JOIN users ON ut.user_id = users.id
+      SQL
+      @teams = db.query(query)
       erb :index
     else
       erb :lp
     end
+  end
+
+  get '/teams' do
+    redirect '/', 303
+  end
+
+  get '/teams/new' do
+    redirect('/', 303) unless current_user
+    erb 'teams/new'.to_sym
+  end
+
+  post '/teams' do
+    redirect('/', 303) unless current_user
+    query = <<~SQL
+      INSERT INTO teams (name, description, created_at, updated_at)
+      VALUES (?, ?, NOW(), NOW())
+    SQL
+    db.xquery(query, params['name'], params['description'])
+    team_id = db.last_id
+
+    query = <<~SQL
+      INSERT INTO users_teams (user_id, team_id, role, created_at, updated_at)
+      VALUES (?, ?, "leader", NOW(), NOW())
+    SQL
+    db.xquery(query, current_user['id'], team_id)
+
+    redirect("/teams/#{team_id}", 303)
+  end
+
+  get '/teams/:team_id' do
+    query = <<~SQL
+      SELECT teams.name, description, users.id AS leader_id, users.nickname AS leader_name FROM teams
+      INNER JOIN users_teams AS ut ON teams.id = ut.team_id AND ut.role = 'leader'
+      INNER JOIN users ON ut.user_id = users.id
+      WHERE teams.id = ?
+    SQL
+
+    @team = db.xquery(query, params['team_id']).first
+    erb 'teams/show'.to_sym
   end
 
   get '/auth/slack/callback' do

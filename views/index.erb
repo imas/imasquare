@@ -1,9 +1,17 @@
-Hello, world!!
+<h1>IM@Square</h1>
 
-<% if current_user %>
-  <img src="<%= current_user['avatar_url'] %>" alt="<%= current_user['nickname']%>"/>
-  <br />
-  Hello, <%= current_user['nickname'] %> <a href='/auth/slack/destroy'>Logout</a>
-<% else %>
-  <a href='/auth/slack'>Login with slack</a>
-<% end %>
+<p><img src="<%= current_user['avatar_url'] %>" style='width: 1.2em; height: 1.2em;' alt="<%= current_user['nickname']%>"/><%= current_user['nickname'] %>としてログインしています。<a href='/auth/slack/destroy'>ログアウト</a></p>
+
+<h2>メニュー</h2>
+
+<ul>
+  <li><a href='/teams/new'>チームを作成</a></li>
+</ul>
+
+<h2>チーム一覧</h2>
+
+<ul>
+  <% @teams.each do |team| %>
+    <li><a href="/teams/<%= team['id']%>"><%= team['name'] %></a> (<%= team['leader_name'] %>)</li>
+  <% end %>
+</ul>
