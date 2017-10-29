@@ -113,7 +113,7 @@ class Imasquare < Sinatra::Base
   end
 
   get '/auth/slack/destroy' do
-    session['user_id'] = nil
+    session.clear
     redirect '/', 303
   end
 end
