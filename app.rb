@@ -8,7 +8,7 @@ class Imasquare < Sinatra::Base
     provider :slack,
       ENV.fetch('IMASQUARE_SLACK_CLIENT_ID'),
       ENV.fetch('IMASQUARE_SLACK_CLIENT_SECRET'),
-      scope: 'users:read,identify',
+      scope: 'users:read,channels:write,identify',
       team: ENV.fetch('IMASQUARE_SLACK_TEAM_NAME', 'imas-hack')
   end
 
