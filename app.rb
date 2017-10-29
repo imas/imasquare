@@ -3,7 +3,10 @@ require 'sinatra/base'
 require 'omniauth-slack'
 
 class Imasquare < Sinatra::Base
-  use Rack::Session::Cookie
+  use Rack::Session::Cookie,
+    key: 'rack.session',
+    expire_after: 60 * 60 * 24 * 14,
+    secret: ENV.fetch('IMASQUARE_SESSION_SECRET', 'd1d_y0u_kN0w')
   use OmniAuth::Builder do
     provider :slack,
       ENV.fetch('IMASQUARE_SLACK_CLIENT_ID'),
@@ -35,7 +38,6 @@ class Imasquare < Sinatra::Base
   end
 
   configure do
-    set :session_secret, ENV.fetch('IMASQUARE_SESSION_SECRET', 'd1d_y0u_kN0w')
     enable :sessions
   end
 
