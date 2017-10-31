@@ -133,6 +133,40 @@ class Imasquare < Sinatra::Base
     redirect("/teams/#{params['team_id']}", 303)
   end
 
+  get '/teams/:team_id/entries/new' do
+    # TODO: 権限チェック
+    query = <<~SQL
+      SELECT id, name FROM teams WHERE teams.id = ?
+    SQL
+    @team = db.xquery(query, params['team_id']).first
+    erb 'entries/new'.to_sym
+  end
+
+  post '/teams/:team_id/entries' do
+    # TODO: 権限チェック
+    query = <<~SQL
+      INSERT INTO entries (author_id, team_id, title, summary, created_at, updated_at)
+      VALUES (?, ?, ?, ?, NOW(), NOW())
+    SQL
+    db.xquery(query, current_user['id'], params['team_id'], params['title'], params['summary'])
+    entry_id = db.last_id
+    redirect("/entries/#{entry_id}", 303)
+  end
+
+  get '/entries/:entry_id' do
+    query = <<~SQL
+      SELECT entries.id AS entry_id, entries.title, entries.summary,
+      users.id AS author_id, users.nickname AS author_name,
+      teams.id AS team_id, teams.name AS team_name FROM entries
+      INNER JOIN users ON entries.author_id = users.id
+      INNER JOIN teams ON entries.team_id = teams.id
+      WHERE entries.id = ?
+    SQL
+
+    @entry = db.xquery(query, params['entry_id']).first
+    erb 'entries/show'.to_sym
+  end
+
   get '/auth/slack/callback' do
     auth_info = request.env['omniauth.auth']['info']
     query = <<~SQL

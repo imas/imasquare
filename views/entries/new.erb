@@ -1,0 +1,20 @@
+<h1>発表の登録</h1>
+
+<p><%= @team['name'] %>の発表として登録します。</p>
+
+<ul>
+  <li>個人かチームか(チームに持たせても良いかも)</li>
+  <li>発表順どうしたいか</li>
+</ul>
+
+<form action='/teams/<%= @team['id'] %>/entries' method='post'>
+  <div>
+    <label for='name'>タイトル</label>
+    <input type='text' name='title' />
+  </div>
+  <div>
+    <label for='name'>概要</label>
+    <input type='text' name='summary' />
+  </div>
+  <input type='submit' value='登録' />
+</form>

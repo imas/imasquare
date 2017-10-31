@@ -27,3 +27,17 @@ CREATE TABLE users_teams (
 ) Engine=InnoDB DEFAULT CHARSET=utf8mb4;
 ALTER TABLE users_teams ADD CONSTRAINT fk_user_id_on_users_teams FOREIGN KEY (user_id) REFERENCES users (id) ON DELETE CASCADE;
 ALTER TABLE users_teams ADD CONSTRAINT fk_team_id_on_users_teams FOREIGN KEY (team_id) REFERENCES teams (id) ON DELETE CASCADE;
+
+DROP TABLE IF EXISTS entries;
+CREATE TABLE entries (
+  id BIGINT UNSIGNED AUTO_INCREMENT NOT NULL PRIMARY KEY,
+  title VARCHAR(127) NOT NULL,
+  summary TEXT,
+  presentation_order INT UNSIGNED,
+  team_id BIGINT UNSIGNED NOT NULL,
+  author_id VARCHAR(31) NOT NULL,
+  created_at DATETIME NOT NULL,
+  updated_at DATETIME NOT NULL
+) Engine=InnoDB DEFAULT CHARSET=utf8mb4;
+ALTER TABLE entries ADD CONSTRAINT fk_team_id_on_entries FOREIGN KEY (team_id) REFERENCES teams (id) ON DELETE CASCADE;
+ALTER TABLE entries ADD CONSTRAINT fk_user_id_on_entries FOREIGN KEY (author_id) REFERENCES users (id) ON DELETE CASCADE;
