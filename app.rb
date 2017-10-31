@@ -102,7 +102,7 @@ class Imasquare < Sinatra::Base
 
   get '/teams/:team_id' do
     query = <<~SQL
-      SELECT teams.name, description, users.id AS leader_id, users.nickname AS leader_name FROM teams
+      SELECT teams.id, teams.name, description, users.id AS leader_id, users.nickname AS leader_name FROM teams
       INNER JOIN users_teams AS ut ON teams.id = ut.team_id AND ut.role = 'leader'
       INNER JOIN users ON ut.user_id = users.id
       WHERE teams.id = ?
@@ -110,6 +110,27 @@ class Imasquare < Sinatra::Base
 
     @team = db.xquery(query, params['team_id']).first
     erb 'teams/show'.to_sym
+  end
+
+  get '/teams/:team_id/edit' do
+    query = <<~SQL
+      SELECT teams.id, teams.name, description, users.id AS leader_id, users.nickname AS leader_name FROM teams
+      INNER JOIN users_teams AS ut ON teams.id = ut.team_id AND ut.role = 'leader'
+      INNER JOIN users ON ut.user_id = users.id
+      WHERE teams.id = ?
+    SQL
+    @team = db.xquery(query, params['team_id']).first
+
+    return 403 if @team['leader_id'] != current_user['id']
+    erb 'teams/edit'.to_sym
+  end
+
+  post '/teams/:team_id' do
+    ut = db.xquery('SELECT user_id FROM users_teams WHERE team_id = ? AND role = "leader"', params['team_id']).first
+    return 403 if ut['user_id'] != current_user['id']
+
+    db.xquery('UPDATE teams SET name = ?, description = ?, updated_at = NOW() WHERE id = ?', params['name'], params['description'], params['team_id'])
+    redirect("/teams/#{params['team_id']}", 303)
   end
 
   get '/auth/slack/callback' do

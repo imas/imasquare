@@ -2,6 +2,10 @@
 
 <p><%= @team['description'] %></p>
 
+<% if @team['leader_id'] == current_user['id'] %>
+  <p><a href='/teams/<%= @team['id'] %>/edit'>編集</a></p>
+<% end %>
+
 <ul>
   <li>代表者: <a href='/users/<%= @team['leader_id'] %>'><%= @team['leader_name'] %></a></li>
 </ul>

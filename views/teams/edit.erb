@@ -1,0 +1,13 @@
+<h1>チームの編集</h1>
+
+<form action='/teams/<%= @team['id'] %>' method='post'>
+  <div>
+    <label for='name'>チーム名</label>
+    <input type='text' name='name' value='<%= @team['name'] %>' />
+  </div>
+  <div>
+    <label for='name'>チームの説明</label>
+    <input type='text' name='description' value='<%= @team['description'] %>' />
+  </div>
+  <input type='submit' value='登録' />
+</form>
