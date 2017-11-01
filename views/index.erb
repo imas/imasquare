@@ -8,7 +8,17 @@
 </nav>
 <div id='overview'>
   <div class='container section'>
-    <p><a href='/users/<%= current_user['id']%>'><img src="<%= current_user['avatar_url'] %>" style='width: 1.2em; height: 1.2em;' alt="<%= current_user['nickname']%>"/><%= current_user['nickname'] %></a>としてログインしています。<a href='/auth/slack/destroy'>ログアウト</a></p>
+    <div class='row'>
+      <div class='col s12'>
+        <p><a href='/users/<%= current_user['id']%>'><img src="<%= current_user['avatar_url'] %>" style='width: 1.2em; height: 1.2em;' alt="<%= current_user['nickname']%>"/><%= current_user['nickname'] %></a>としてログインしています。<a href='/auth/slack/destroy'>ログアウト</a></p>
+      </div>
+      <div class='col s12'>
+        残り時間<br />
+        <span id='days' style='font-size: 5em;'>00</span>
+        <span style='font-size: 3em;'>日</span>
+        <span id='time' style='font-size: 5em;'>00:00:00</span>
+      </div>
+    </div>
   </div>
 </div>
 <div id='teams'>
@@ -21,3 +31,36 @@
     <a href='/teams/new' class='btn-floating btn-large blue waves-effect waves-light'><i class='material-icons'>add</i></a>
   </div>
 </div>
+
+<script type='text/javascript'>
+window.onload = function() {
+  var days = document.getElementById('days');
+  var time = document.getElementById('time');
+  var calcRestTime = function(cb) {
+    var current = new Date();
+    var deadLine = new Date('2017/12/16 17:00:00');
+    var diffTime = deadLine.getTime() - current.getTime();
+    var days = Math.floor(diffTime / (1000 * 60 * 60 * 24));
+    diffTime -= days * (1000 * 60 * 60 * 24);
+    var hours = Math.floor(diffTime / (1000 * 60 * 60));
+    diffTime -= hours * (1000 * 60 * 60);
+    var minutes = Math.floor(diffTime / (1000 * 60));
+    diffTime -= minutes * (1000 * 60);
+    var seconds = Math.floor(diffTime / (1000));
+
+    cb(days, hours, minutes, seconds);
+  };
+  var tick = function() {
+    calcRestTime(function(day, hour, min, sec) {
+      days.innerText = day;
+      var paddedHour = hour < 10 ? '0' + hour : hour;
+      var paddedMin = min < 10 ? '0' + min : min;
+      var paddedSec = sec < 10 ? '0' + sec : sec;
+
+      time.innerText = paddedHour + ':' + paddedMin + ':' + paddedSec;
+      setTimeout(tick, 1000);
+    });
+  };
+  tick();
+};
+</script>
