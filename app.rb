@@ -109,7 +109,52 @@ class Imasquare < Sinatra::Base
     SQL
 
     @team = db.xquery(query, params['team_id']).first
+
+    query = <<~SQL
+      SELECT users.id, users.nickname, ut.role FROM users_teams AS ut
+      INNER JOIN users ON ut.user_id = users.id
+      WHERE ut.team_id = ?
+    SQL
+
+    @members = db.xquery(query, params['team_id'])
     erb 'teams/show'.to_sym
+  end
+
+  post '/teams/:team_id/join' do
+    query = <<~SQL
+      SELECT users.id, users.nickname, ut.team_id, ut.role FROM users_teams AS ut
+      INNER JOIN users ON ut.user_id = users.id
+      WHERE ut.team_id = ?
+    SQL
+
+    members = db.xquery(query, params['team_id'])
+    unless members.map { |m| m['id'] }.include?(current_user['id'])
+      query = <<~SQL
+        INSERT INTO users_teams (user_id, team_id, role, created_at, updated_at)
+        VALUES (?, ?, "member", NOW(), NOW())
+      SQL
+      db.xquery(query, current_user['id'], params['team_id'])
+    end
+
+    redirect("/teams/#{members.first['team_id']}", 303)
+  end
+
+  get '/teams/:team_id/leave' do
+    query = <<~SQL
+      SELECT users.id, users.nickname, ut.team_id, ut.role FROM users_teams AS ut
+      INNER JOIN users ON ut.user_id = users.id
+      WHERE ut.team_id = ?
+    SQL
+    members = db.xquery(query, params['team_id'])
+    ut = members.find { |m| m['id'] == current_user['id'] }
+    return 403 if ut.nil?
+    return 403 if ut['role'] == 'leader'
+
+    query = <<~SQL
+      DELETE FROM users_teams WHERE user_id = ? AND team_id = ?
+    SQL
+    db.xquery(query, current_user['id'], params['team_id'])
+    redirect("/teams/#{params['team_id']}", 303)
   end
 
   get '/teams/:team_id/edit' do
