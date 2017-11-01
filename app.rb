@@ -62,7 +62,7 @@ class Imasquare < Sinatra::Base
   end
 
   get '/users/:user_id' do
-    @user = db.xquery('SELECT nickname, avatar_url FROM users WHERE id = ? LIMIT 1', params['user_id']).first
+    @user = db.xquery('SELECT id, nickname, avatar_url FROM users WHERE id = ? LIMIT 1', params['user_id']).first
     query = <<~SQL
       SELECT teams.id, teams.name, ut.role FROM users
       INNER JOIN users_teams AS ut ON users.id = ut.user_id

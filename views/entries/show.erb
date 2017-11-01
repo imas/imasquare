@@ -1,6 +1,14 @@
-<p><a href='/teams/<%= @entry['team_id'] %>'>&lt;&lt;&nbsp;<%= @entry['team_name'] %></a></p>
+<nav class='light-blue'>
+  <div class='nav-wrapper container'>
+    <div class='col s12'>
+      <a href='/' class='breadcrumb'>Top</a>
+      <a href='/teams/<%= @entry['team_id'] %>' class='breadcrumb'><%= @entry['team_name'] %></a>
+      <a href='/entries/<%= @entry['entry_id'] %>' class='breadcrumb'><%= @entry['title'] %></a>
+    </div>
+  </div>
+</nav>
 
-<h1><%= @entry['title'] %></h1>
-
-<p><%= @entry['summary'] %></p>
-<p>登録者: <%= @entry['author_name'] %></p>
+<div class='container section'>
+  <p><%= @entry['summary'] %></p>
+  <p>登録者: <%= @entry['author_name'] %></p>
+</div>

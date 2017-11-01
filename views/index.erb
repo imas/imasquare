@@ -1,17 +1,23 @@
-<h1>IM@Square</h1>
-
-<p><a href='/users/<%= current_user['id']%>'><img src="<%= current_user['avatar_url'] %>" style='width: 1.2em; height: 1.2em;' alt="<%= current_user['nickname']%>"/><%= current_user['nickname'] %></a>としてログインしています。<a href='/auth/slack/destroy'>ログアウト</a></p>
-
-<h2>メニュー</h2>
-
-<ul>
-  <li><a href='/teams/new'>チームを作成</a></li>
-</ul>
-
-<h2>チーム一覧</h2>
-
-<ul>
-  <% @teams.each do |team| %>
-    <li><a href="/teams/<%= team['id']%>"><%= team['name'] %></a> (<a href='/users/<%= team['leader_id'] %>'><%= team['leader_name'] %></a>)</li>
-  <% end %>
-</ul>
+<nav class='nav-extended light-blue'>
+  <div class='nav-content container'>
+    <ul class='tabs tabs-transparent'>
+      <li class='tab'><a href='#overview' class='active'>Overview</a></li>
+      <li class='tab'><a href='#teams'>Teams</a></li>
+    </ul>
+  </div>
+</nav>
+<div id='overview'>
+  <div class='container section'>
+    <p><a href='/users/<%= current_user['id']%>'><img src="<%= current_user['avatar_url'] %>" style='width: 1.2em; height: 1.2em;' alt="<%= current_user['nickname']%>"/><%= current_user['nickname'] %></a>としてログインしています。<a href='/auth/slack/destroy'>ログアウト</a></p>
+  </div>
+</div>
+<div id='teams'>
+  <ul class='collection'>
+    <% @teams.each do |team| %>
+      <a href="/teams/<%= team['id']%>" class='collection-item blue-text'><%= team['name'] %></a>
+    <% end %>
+  </ul>
+  <div class='fixed-action-btn toolbar'>
+    <a href='/teams/new' class='btn-floating btn-large blue waves-effect waves-light'><i class='material-icons'>add</i></a>
+  </div>
+</div>
