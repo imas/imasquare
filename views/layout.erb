@@ -2,19 +2,29 @@
 <html>
   <head>
     <title>IM@Square</title>
-    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+    <link href='https://fonts.googleapis.com/icon?family=Material+Icons' rel='stylesheet'>
     <!-- Compiled and minified CSS -->
     <link rel='stylesheet' href='https://cdnjs.cloudflare.com/ajax/libs/materialize/0.100.2/css/materialize.min.css'>
   </head>
   <body>
-    <nav class="light-blue lighten-1" role="navigation">
-      <div class="nav-wrapper container">
-        <a id="logo-container" href="/" class="brand-logo">IM@Square</a>
+    <ul id='nav-dropdown' class='dropdown-content'>
+      <li><a href='/auth/slack/destroy'>Logout</a></li>
+    </ul>
+    <nav class='light-blue lighten-1' role='navigation'>
+      <div class='nav-wrapper container'>
+        <a id='logo-container' href='/' class='brand-logo'>IM@Square</a>
+        <ul id='nav-mobile' class='right hide-on-med-and-down'>
+          <% if current_user %>
+            <li><a class='dropdown-button' href='#!' data-activates='nav-dropdown'><img src='<%= current_user['avatar_url'] %>' style='width: 1.2em; height: 1.2em;' alt='<%= current_user['nickname'] %>' />&nbsp;<%= current_user['nickname'] %></a></li>
+          <% else %>
+            <li><a href='/auth/slack'>Login</a></li>
+          <% end %>
+        </ul>
       </div>
     </nav>
     <%= yield %>
     <!-- jQuery -->
-    <script src="https://code.jquery.com/jquery-2.1.1.min.js"></script>
+    <script src='https://code.jquery.com/jquery-2.1.1.min.js'></script>
     <!-- Compiled and minified JavaScript -->
     <script src='https://cdnjs.cloudflare.com/ajax/libs/materialize/0.100.2/js/materialize.min.js'></script>
   </body>
