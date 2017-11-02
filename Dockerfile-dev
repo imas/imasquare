@@ -1,0 +1,28 @@
+FROM ruby:2.4.2
+
+ENV ENTRYKIT_VERSION 0.4.0
+RUN echo "deb http://http.debian.net/debian jessie-backports main" >> /etc/apt/sources.list \
+  && apt-get update \
+  && apt-get install -y --no-install-recommends zsh less \
+  && wget https://github.com/progrium/entrykit/releases/download/v${ENTRYKIT_VERSION}/entrykit_${ENTRYKIT_VERSION}_Linux_x86_64.tgz \
+  && tar -xvzf entrykit_${ENTRYKIT_VERSION}_Linux_x86_64.tgz \
+  && rm entrykit_${ENTRYKIT_VERSION}_Linux_x86_64.tgz \
+  && mv entrykit /bin/entrykit \
+  && chmod +x /bin/entrykit \
+  && entrykit --symlink \
+  && rm -rf /var/lib/apt/lists/*
+RUN mkdir imas
+ENV DISPLAY :99
+
+WORKDIR /imas
+ADD . .
+ENV DOCKER 1
+ENV BUNDLE_APP_CONFIG .bundle
+ENV EMBULK_BUNDLE /repro/embulk/emr
+
+RUN gem install bundler
+ENTRYPOINT [ \
+  "prehook", "ruby -v", "--", \
+  "prehook", "bundle install --path .bundle", "--", \
+  "prehook", "ruby docker/setup.rb", "--"]
+# vim:ft=dockerfile

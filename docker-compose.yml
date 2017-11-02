@@ -1,0 +1,62 @@
+version: "2"
+services:
+  datastore:
+    image: busybox
+    volumes:
+      - mysql-data:/var/lib/mysql
+      - app-log:/imas/log
+      - bundle_install:/imas/.bundle
+      - bundle:/imas/.bundle
+      - bundle_deployment:/imas/.bundle_deployment
+      - tmpdir:/imas/tmp
+  mysql:
+    image: mysql:5.7
+    environment:
+      MYSQL_ROOT_PASSWORD: password
+    networks:
+      - default
+    ports:
+      - '4306:3306'
+    volumes_from:
+      - datastore
+
+  app_base: &app_base
+    build:
+      context: .
+      dockerfile: Dockerfile-dev
+    dns:
+      - 8.8.8.8
+      - 8.8.4.4
+    environment:
+      DOCKER_HOST: ${DOCKER_HOST}
+      IMASQUARE_SLACK_CLIENT_ID: ${IMASQUARE_SLACK_CLIENT_ID}
+      IMASQUARE_SLACK_CLIENT_SECRET: ${IMASQUARE_SLACK_CLIENT_SECRET}
+      IMASQUARE_DB_USERNAME: root
+      IMASQUARE_DB_PASSWORD: password
+      IMASQUARE_DB_HOST: mysql
+    depends_on:
+      - mysql
+    networks:
+      - default
+    volumes_from:
+      - datastore
+    tmpfs:
+      /imas/tmp/pids
+  app:
+    <<: *app_base
+    ports:
+      - '8853:9292'
+    command: ["bundle", "exec", "rackup", "-o", "0.0.0.0", "-p", "9292"]
+volumes:
+  mysql-data:
+    driver: local
+  app-log:
+    driver: local
+  bundle_install:
+    driver: local
+  bundle:
+    driver: local
+  bundle_deployment:
+    driver: local
+  tmpdir:
+    driver: local
