@@ -50,11 +50,31 @@ class Imasquare < Sinatra::Base
   get '/' do
     if current_user
       query = <<~SQL
+        SELECT teams.id, teams.name, ut.role FROM users
+        INNER JOIN users_teams AS ut ON users.id = ut.user_id
+        INNER JOIN teams ON ut.team_id = teams.id
+        WHERE users.id = ?
+      SQL
+      @current_user_teams = db.xquery(query, current_user['id'])
+
+      query = <<~SQL
         SELECT teams.id, teams.name, users.id AS leader_id, users.nickname AS leader_name FROM teams
         INNER JOIN users_teams AS ut ON teams.id = ut.team_id AND ut.role = 'leader'
         INNER JOIN users ON ut.user_id = users.id
       SQL
       @teams = db.query(query)
+
+      query = <<~SQL
+        SELECT
+          entries.id, title,
+          teams.id AS team_id, teams.name AS team_name,
+          users.id AS author_id, users.nickname AS author_name
+        FROM entries
+        INNER JOIN teams ON teams.id = entries.team_id
+        INNER JOIN users ON entries.author_id = users.id
+      SQL
+      @entries = db.query(query)
+
       erb :index
     else
       erb :lp

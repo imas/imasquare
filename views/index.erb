@@ -3,6 +3,7 @@
     <ul class='tabs tabs-transparent'>
       <li class='tab'><a href='#overview' class='active'>Overview</a></li>
       <li class='tab'><a href='#teams'>Teams</a></li>
+      <li class='tab'><a href='#entries'>Entries</a></li>
     </ul>
   </div>
 </nav>
@@ -30,6 +31,17 @@
   <div class='fixed-action-btn toolbar'>
     <a href='/teams/new' class='btn-floating btn-large blue waves-effect waves-light'><i class='material-icons'>add</i></a>
   </div>
+</div>
+<div id='entries'>
+  <ul class='collection'>
+    <% @entries.each do |entry| %>
+      <li class='collection-item'>
+        <a href="/teams/<%= entry['team_id']%>"><%= entry['team_name'] %></a>:
+        <a href="/entries/<%= entry['id']%>"><%= entry['title'] %></a>
+        by <a href="/users/<%= entry['author_id']%>"><%= entry['author_name'] %></a>
+      </li>
+    <% end %>
+  </ul>
 </div>
 
 <script type='text/javascript'>
