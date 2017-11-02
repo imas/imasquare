@@ -9,3 +9,9 @@ Simple contribution platform for IM@Study.
 $ bundle install
 $ bundle exec rackup
 ```
+
+## DB migration
+
+```
+$ bundle exec ridgepole -c database.yml --apply -f Schemafile
+```
