@@ -131,12 +131,21 @@ class Imasquare < Sinatra::Base
     @team = db.xquery(query, params['team_id']).first
 
     query = <<~SQL
-      SELECT users.id, users.nickname, ut.role FROM users_teams AS ut
+      SELECT users.id, users.nickname, users.avatar_url, ut.role FROM users_teams AS ut
       INNER JOIN users ON ut.user_id = users.id
       WHERE ut.team_id = ?
     SQL
 
     @members = db.xquery(query, params['team_id'])
+
+    query = <<~SQL
+      SELECT entries.id, entries.title, users.id AS author_id, users.nickname AS author_name, users.avatar_url FROM entries
+      INNER JOIN users ON entries.author_id = users.id
+      WHERE entries.team_id = ?
+    SQL
+
+    @entries = db.xquery(query, params['team_id'])
+
     erb 'teams/show'.to_sym
   end
 

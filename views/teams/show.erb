@@ -6,14 +6,62 @@
     </div>
   </div>
 </nav>
-<div class='container'>
-  <h2 class='header'></h2>
-
-  <p><%= @team['description'] %></p>
-
-  <ul>
-    <li>代表者: <a href='/users/<%= @team['leader_id'] %>'><%= @team['leader_name'] %></a></li>
-  </ul>
+<div class='container section'>
+  <div class='row'>
+    <div class='col s12'>
+      <div class='card'>
+        <div class='card-image'>
+          <div class='light-blue' style='height: 150px;'></div>
+          <span class='card-title'><%= @team['name'] %></span>
+          <% unless @members.map { |m| m['id'] }.include?(current_user['id']) %>
+            <form action='/teams/<%= @team['id'] %>/join' method='POST'>
+              <button type='submit' class='btn-floating btn-large halfway-fab waves-effect waves-light blue'>
+                <i class='material-icons'>group_add</i>
+              </button>
+            </form>
+          <% end %>
+        </div>
+        <div class='card-content'>
+          <p class='flow-text'><%= @team['description'] %></p>
+          <div class='right-align' style='margin-top: 1em;'>
+            <% @members.each do |member| %>
+              <a href='/users/<%= member['id'] %>'>
+                <div class='chip<%= member['role'] == 'leader' ? ' light-blue lighten-3' : '' %>'>
+                  <img src='<%= member['avatar_url'] %>' alt='<%= member['nickname'] %>' />
+                  <% if member['role'] == 'leader' %>
+                    <b><%= member['nickname'] %></b>
+                  <% else %>
+                    <%= member['nickname'] %>
+                  <% end %>
+                </div>
+              </a>
+            <% end %>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class='row'>
+    <div class='col s12'>
+      <h5 class='center-align blue-text truncate'><%= @team['name'] %>の発表</h5>
+    </div>
+    <div class='col s12'>
+      <% if @entries.any? %>
+        <ul class='collection'>
+          <% @entries.each do |entry| %>
+          <li class='collection-item avatar'>
+            <img src='<%= entry['avatar_url'] %>' alt='<% entry['author_name'] %>' class='circle'>
+            <span class='title'><a href='/entries/<%= entry['id'] %>'><%= entry['title'] %></a></span>
+            <p class='grey-text'>by <%= entry['author_name'] %></p>
+          </li>
+        <% end %>
+        </ul>
+    </div>
+  <% else %>
+    <p class='flow-text center-align grey-text'>発表が登録されていません</p>
+  <% end %>
+  </div>
+  </div>
 </div>
 <% if @team['leader_id'] == current_user['id'] %>
   <div class='fixed-action-btn toolbar'>
@@ -30,13 +78,5 @@
       <li class='waves-effect waves-light blue'><a href='/teams/<%= @team['id'] %>/leave'><i class='material-icons'>highlight_off</i></a></li>
       <li class='waves-effect waves-light blue'><a href='/teams/<%= @team['id'] %>/entries/new'><i class='material-icons'>library_add</i></a></li>
     </ul>
-  </div>
-<% else %>
-  <div class='fixed-action-btn toolbar'>
-    <form action='/teams/<%= @team['id'] %>/join' method='POST'>
-      <button type='submit' class='btn-floating btn-large blue waves-effect waves-light'>
-        <i class='material-icons'>group_add</i>
-      </button>
-    </form>
   </div>
 <% end %>
