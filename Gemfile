@@ -9,6 +9,14 @@ gem 'sinatra-contrib'
 gem 'mysql2'
 gem 'mysql2-cs-bind'
 gem 'ridgepole'
+gem 'capistrano', '~> 3.0'
+gem 'capistrano-rbenv'
+gem 'capistrano-bundler'
+gem 'capistrano3-unicorn'
+
+group :production do
+  gem 'unicorn'
+end
 
 gem 'omniauth'
 gem 'omniauth-slack'
