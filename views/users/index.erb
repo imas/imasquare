@@ -1,0 +1,15 @@
+<nav class='light-blue'>
+  <div class='nav-wrapper container'>
+    <div class='col s12'>
+      <a href='/' class='breadcrumb'>Top</a>
+      <a href='/users' class='breadcrumb'>ユーザー一覧</a>
+    </div>
+  </div>
+</nav>
+<div class='container'>
+  <ul>
+    <% @users.each do |user| %>
+      <li><%= user['nickname'] %></li>
+    <% end %>
+  </ul>
+</div>

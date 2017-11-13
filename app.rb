@@ -87,6 +87,11 @@ class Imasquare < Sinatra::Base
     end
   end
 
+  get '/users' do
+    @users = db.xquery('SELECT id, nickname, avatar_url FROM users')
+    erb '/users/index'.to_sym
+  end
+
   get '/users/:user_id' do
     @user = db.xquery('SELECT id, nickname, avatar_url FROM users WHERE id = ? LIMIT 1', params['user_id']).first
     query = <<~SQL
