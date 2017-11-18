@@ -1,6 +1,7 @@
 create_table "users", id: :string, limit: 31, force: :cascade, options: "ENGINE=InnoDB DEFAULT CHARSET=utf8mb4" do |t|
-  t.string "nickname", limit: 127
-  t.string "avatar_url", limit: 254
+  t.string "nickname", limit: 127, null: false
+  t.string "avatar_url", limit: 254, null: false
+  t.boolean "is_admin", default: false, null: false
   t.datetime "created_at", null: false
   t.datetime "updated_at", null: false
   t.index ["avatar_url"], name: "avatar_url", unique: true
@@ -9,7 +10,8 @@ end
 
 create_table "teams", id: :bigint, unsigned: true, force: :cascade, options: "ENGINE=InnoDB DEFAULT CHARSET=utf8mb4" do |t|
   t.string "name", limit: 127, null: false
-  t.text "description"
+  t.text "description", null: false
+  t.boolean "is_single", default: false, null: false
   t.datetime "created_at", null: false
   t.datetime "updated_at", null: false
 end
@@ -29,7 +31,8 @@ add_foreign_key "users_teams", "users", name: "fk_user_id_on_users_teams", on_de
 
 create_table "entries", id: :bigint, unsigned: true, force: :cascade, options: "ENGINE=InnoDB DEFAULT CHARSET=utf8mb4" do |t|
   t.string "title", limit: 127, null: false
-  t.text "summary"
+  t.text "summary", null: false
+  t.string "order_request", default: "none", null: false
   t.integer "presentation_order", unsigned: true
   t.bigint "team_id", null: false, unsigned: true
   t.string "author_id", limit: 31, null: false
@@ -41,3 +44,5 @@ end
 
 add_foreign_key "entries", "teams", name: "fk_team_id_on_entries", on_delete: :cascade
 add_foreign_key "entries", "users", column: "author_id", name: "fk_user_id_on_entries", on_delete: :cascade
+
+# vim:ft=ruby
