@@ -1,0 +1,27 @@
+<nav class='light-blue'>
+  <div class='nav-wrapper container'>
+    <div class='col s12'>
+      <a href='/' class='breadcrumb'>Top</a>
+      <a href='/teams/<%= @entry['team_id'] %>' class='breadcrumb'><%= @entry['team_name'] %></a>
+      <a href='/entries/<%= @entry['id'] %>' class='breadcrumb'><%= @entry['title'] %></a>
+      <a href='/entries/<%= @entry['id'] %>/edit' class='breadcrumb'>編集</a>
+    </div>
+  </div>
+</nav>
+<div class='container section'>
+  <form action='/entries/<%= @entry['id'] %>' method='post' class='col s12'>
+    <div class='row'>
+      <div class='input-field col s12'>
+        <label for='name'>タイトル</label>
+        <input type='text' name='title' value='<%= @entry['title'] %>' />
+      </div>
+    </div>
+    <div class='row'>
+      <div class='input-field col s12'>
+        <label for='name'>概要</label>
+        <textarea name='summary' class='materialize-textarea'><%= @entry['summary'] %></textarea>
+      </div>
+    </div>
+    <input type='submit' value='登録' class='waves-effect waves-light btn orange' />
+  </form>
+</div>

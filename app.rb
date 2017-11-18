@@ -282,6 +282,32 @@ class Imasquare < Sinatra::Base
     erb 'entries/show'.to_sym
   end
 
+  get '/entries/:entry_id/edit' do
+    query = <<~SQL
+      SELECT entries.id, entries.title, entries.summary, users.id AS author_id, teams.id AS team_id, teams.name AS team_name
+      FROM entries
+      INNER JOIN users ON entries.author_id = users.id
+      INNER JOIN teams ON entries.team_id = teams.id
+      WHERE entries.id = ?
+    SQL
+    @entry = db.xquery(query, params['entry_id']).first
+    return redirect("/entries/#{@entry['id']}", 403) unless current_user['id'] == @entry['author_id']
+
+    erb 'entries/edit'.to_sym
+  end
+
+  post '/entries/:entry_id' do
+    query = <<~SQL
+      SELECT entries.id, entries.title, entries.summary, users.id AS author_id
+      FROM entries INNER JOIN users ON entries.author_id = users.id WHERE entries.id = ?
+    SQL
+    entry = db.xquery(query, params['entry_id']).first
+    return redirect("/entries/#{entry['id']}", 403) unless current_user['id'] == entry['author_id']
+
+    db.xquery('UPDATE entries SET title = ?, summary = ?, updated_at = NOW() WHERE id = ?', params['title'], params['summary'], params['entry_id'])
+    redirect("/entries/#{entry['id']}", 303)
+  end
+
   get '/auth/slack/callback' do
     auth_info = request.env['omniauth.auth']['info']
     query = <<~SQL
