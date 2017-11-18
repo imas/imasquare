@@ -62,50 +62,43 @@ class Imasquare < Sinatra::Base
   end
 
   get '/' do
-    if current_user
-      query = <<~SQL
-        SELECT teams.id, teams.name, ut.role FROM users
-        INNER JOIN users_teams AS ut ON users.id = ut.user_id
-        INNER JOIN teams ON ut.team_id = teams.id
-        WHERE users.id = ?
-      SQL
-      @current_user_teams = db.xquery(query, current_user['id'])
+    redirect('/home', 303) if logined?
 
-      query = <<~SQL
-        SELECT teams.id, teams.name, users.id AS leader_id, users.nickname AS leader_name FROM teams
-        INNER JOIN users_teams AS ut ON teams.id = ut.team_id AND ut.role = 'leader'
-        INNER JOIN users ON ut.user_id = users.id
-      SQL
-      @teams = db.query(query)
+    @users = db.query('SELECT nickname, avatar_url FROM users')
+    erb :index
+  end
 
-      query = <<~SQL
-        SELECT teams.id AS team_id, users.id, users.nickname, users.avatar_url FROM users
-        INNER JOIN users_teams AS ut ON users.id = ut.user_id
-        INNER JOIN teams ON ut.team_id = teams.id
-        WHERE teams.id IN (?)
-      SQL
-      team_member = db.xquery(query, @teams.map { |t| t['id'] })
+  get '/home' do
+    query = <<~SQL
+      SELECT teams.id, teams.name, users.id AS leader_id, users.nickname AS leader_name FROM teams
+      INNER JOIN users_teams AS ut ON teams.id = ut.team_id AND ut.role = 'leader'
+      INNER JOIN users ON ut.user_id = users.id
+    SQL
+    @teams = db.query(query)
 
-      @teams.each do |team|
-        team['members'] = team_member.select { |tm| tm['team_id'] == team['id'] }
-      end
+    query = <<~SQL
+      SELECT teams.id AS team_id, users.id, users.nickname, users.avatar_url FROM users
+      INNER JOIN users_teams AS ut ON users.id = ut.user_id
+      INNER JOIN teams ON ut.team_id = teams.id
+      WHERE teams.id IN (?)
+    SQL
+    team_member = db.xquery(query, @teams.map { |t| t['id'] })
 
-      query = <<~SQL
-        SELECT
-          entries.id, title,
-          teams.id AS team_id, teams.name AS team_name,
-          users.id AS author_id, users.nickname AS author_name, users.avatar_url
-        FROM entries
-        INNER JOIN teams ON teams.id = entries.team_id
-        INNER JOIN users ON entries.author_id = users.id
-      SQL
-      @entries = db.query(query)
-
-      erb :index
-    else
-      @users = db.query('SELECT nickname, avatar_url FROM users')
-      erb :lp
+    @teams.each do |team|
+      team['members'] = team_member.select { |tm| tm['team_id'] == team['id'] }
     end
+
+    query = <<~SQL
+      SELECT
+        entries.id, title,
+        teams.id AS team_id, teams.name AS team_name,
+        users.id AS author_id, users.nickname AS author_name, users.avatar_url
+      FROM entries
+      INNER JOIN teams ON teams.id = entries.team_id
+      INNER JOIN users ON entries.author_id = users.id
+    SQL
+    @entries = db.query(query)
+    erb :home
   end
 
   get '/users' do
