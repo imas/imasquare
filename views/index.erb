@@ -35,10 +35,10 @@
         <li class="collection-header"><h5>発表一覧</h5></li>
         <% if @entries.any? %>
           <% @entries.each do |entry| %>
-            <li class='collection-item'>
-              <a href="/teams/<%= entry['team_id']%>"><%= entry['team_name'] %></a>:
-              <a href="/entries/<%= entry['id']%>"><%= entry['title'] %></a>
-              by <a href="/users/<%= entry['author_id']%>"><%= entry['author_name'] %></a>
+            <li class='collection-item avatar'>
+              <img src='<%= entry['avatar_url'] %>' alt='<% entry['author_name'] %>' class='circle'>
+              <span class='title'><a href='/entries/<%= entry['id'] %>'><%= entry['title'] %></a></span>
+              <p class='grey-text'>by <%= entry['author_name'] %> <small>(<a href="/teams/<%= entry['team_id']%>"><%= entry['team_name'] %></a>)</small></p>
             </li>
           <% end %>
         <% else %>

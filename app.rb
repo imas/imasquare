@@ -74,7 +74,7 @@ class Imasquare < Sinatra::Base
         SELECT
           entries.id, title,
           teams.id AS team_id, teams.name AS team_name,
-          users.id AS author_id, users.nickname AS author_name
+          users.id AS author_id, users.nickname AS author_name, users.avatar_url
         FROM entries
         INNER JOIN teams ON teams.id = entries.team_id
         INNER JOIN users ON entries.author_id = users.id
