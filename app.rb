@@ -83,6 +83,7 @@ class Imasquare < Sinatra::Base
 
       erb :index
     else
+      @users = db.query('SELECT nickname, avatar_url FROM users')
       erb :lp
     end
   end
