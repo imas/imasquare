@@ -1,47 +1,49 @@
-<nav class='nav-extended light-blue'>
-  <div class='nav-content container'>
-    <ul class='tabs tabs-transparent'>
-      <li class='tab'><a href='#overview' class='active'>Overview</a></li>
-      <li class='tab'><a href='#teams'>Teams</a></li>
-      <li class='tab'><a href='#entries'>Entries</a></li>
-    </ul>
-  </div>
-</nav>
-<div id='overview'>
-  <div class='container section'>
+<div class='container'>
+  <div class='section'>
     <div class='row center'>
       <img src='img/cover.png' alt='アイマスハッカソン2017'/>
     </div>
     <div class='row'>
       <div class='col s12 center'>
-        残り時間<br />
+        <span style='font-size: 3em;'>残り</span>
         <span id='days' style='font-size: 5em;'>00</span>
-        <span style='font-size: 3em;'>日</span>
+        <span style='font-size: 3em;'>日と</span>
         <span id='time' style='font-size: 5em;'>00:00:00</span>
       </div>
     </div>
   </div>
-</div>
-<div id='teams'>
-  <ul class='collection'>
-    <% @teams.each do |team| %>
-      <a href="/teams/<%= team['id']%>" class='collection-item blue-text'><%= team['name'] %></a>
-    <% end %>
-  </ul>
-  <div class='fixed-action-btn toolbar'>
-    <a href='/teams/new' class='btn-floating btn-large blue waves-effect waves-light'><i class='material-icons'>add</i></a>
+  <div class='row'>
+    <div class='col s12 m6'>
+      <div class='collection with-header'>
+        <div class="collection-header"><h5>チーム一覧</h5></div>
+        <% @teams.each do |team| %>
+          <a href="/teams/<%= team['id']%>" class='collection-item blue-text'><%= team['name'] %></a>
+        <% end %>
+        <a href='/teams/new' class='collection-item blue-text right'>チームを作成する</a>
+      </div>
+    </div>
+    <div class='col s12 m6'>
+      <ul class='collection with-header'>
+        <li class="collection-header"><h5>発表一覧</h5></li>
+        <% if @entries.any? %>
+          <% @entries.each do |entry| %>
+            <li class='collection-item'>
+              <a href="/teams/<%= entry['team_id']%>"><%= entry['team_name'] %></a>:
+              <a href="/entries/<%= entry['id']%>"><%= entry['title'] %></a>
+              by <a href="/users/<%= entry['author_id']%>"><%= entry['author_name'] %></a>
+            </li>
+            <li class='collection-item'>
+              登録されている発表はありません。
+            </li>
+          <% end %>
+        <% else %>
+          <li class='collection-item'>
+            登録されている発表はありません。
+          </li>
+        <% end %>
+      </ul>
+    </div>
   </div>
-</div>
-<div id='entries'>
-  <ul class='collection'>
-    <% @entries.each do |entry| %>
-      <li class='collection-item'>
-        <a href="/teams/<%= entry['team_id']%>"><%= entry['team_name'] %></a>:
-        <a href="/entries/<%= entry['id']%>"><%= entry['title'] %></a>
-        by <a href="/users/<%= entry['author_id']%>"><%= entry['author_name'] %></a>
-      </li>
-    <% end %>
-  </ul>
 </div>
 
 <script type='text/javascript'>
