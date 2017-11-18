@@ -17,6 +17,7 @@ class Imasquare < Sinatra::Base
   end
 
   helpers do
+    alias_method :h, :escape_html
     def markdown
       @markdown ||= Redcarpet::Markdown.new(Redcarpet::Render::HTML, autolink: true, tables: true)
     end

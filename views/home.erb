@@ -21,7 +21,7 @@
         <% if @entries.any? %>
           <% @teams.each do |team| %>
             <a href="/teams/<%= team['id']%>" class='collection-item blue-text'>
-              <%= team['name'] %>
+              <%= h(team['name']) %>
               <% team['members'].each do |member| %>
                 <img src='<%= member['avatar_url'] %>' alt='<%= member['nickname'] %>' class='circle' style='width: 20px; height:20px; vertical-align: text-bottom;' />
               <% end %>
@@ -47,8 +47,8 @@
           <% @entries.each do |entry| %>
             <li class='collection-item avatar'>
               <img src='<%= entry['avatar_url'] %>' alt='<% entry['author_name'] %>' class='circle'>
-              <span class='title'><a href='/entries/<%= entry['id'] %>'><%= entry['title'] %></a></span>
-              <p class='grey-text'>by <%= entry['author_name'] %> <small>(<a href="/teams/<%= entry['team_id']%>"><%= entry['team_name'] %></a>)</small></p>
+              <span class='title'><a href='/entries/<%= entry['id'] %>'><%= h(entry['title']) %></a></span>
+              <p class='grey-text'>by <%= entry['author_name'] %> <small>(<a href="/teams/<%= entry['team_id']%>"><%= h(entry['team_name']) %></a>)</small></p>
             </li>
           <% end %>
         <% else %>

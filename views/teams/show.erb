@@ -2,7 +2,7 @@
   <div class='nav-wrapper container'>
     <div class='col s12'>
       <a href='/' class='breadcrumb'>Top</a>
-      <a href='/teams/<%= @team['id'] %>' class='breadcrumb'><%= @team['name'] %></a>
+      <a href='/teams/<%= @team['id'] %>' class='breadcrumb'><%= h(@team['name']) %></a>
     </div>
   </div>
 </nav>
@@ -12,7 +12,7 @@
       <div class='card'>
         <div class='card-image'>
           <div class='light-blue' style='height: 150px;'></div>
-          <span class='card-title'><%= @team['name'] %></span>
+          <span class='card-title'><%= h(@team['name']) %></span>
           <% if logined? && @team['is_single'] == 0 %>
             <% unless @members.map { |m| m['id'] }.include?(current_user&.[]('id')) %>
               <form action='/teams/<%= @team['id'] %>/join' method='POST'>
@@ -25,7 +25,7 @@
         </div>
         <div class='card-content'>
           <div>
-            <%= markdown.render(@team['description']) %>
+            <%= markdown.render(h(@team['description'])) %>
           </div>
           <div class='right-align' style='margin-top: 1em;'>
             <% @members.each do |member| %>
@@ -47,7 +47,7 @@
   </div>
   <div class='row'>
     <div class='col s12'>
-      <h5 class='center-align blue-text truncate'><%= @team['name'] %>の発表</h5>
+      <h5 class='center-align blue-text truncate'><%= h(@team['name']) %>の発表</h5>
     </div>
     <div class='col s12'>
       <% if @entries.any? %>
@@ -55,7 +55,7 @@
           <% @entries.each do |entry| %>
           <li class='collection-item avatar'>
             <img src='<%= entry['avatar_url'] %>' alt='<% entry['author_name'] %>' class='circle'>
-            <span class='title'><a href='/entries/<%= entry['id'] %>'><%= entry['title'] %></a></span>
+            <span class='title'><a href='/entries/<%= entry['id'] %>'><%= h(entry['title']) %></a></span>
             <p class='grey-text'>by <%= entry['author_name'] %></p>
           </li>
         <% end %>

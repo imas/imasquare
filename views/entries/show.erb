@@ -2,8 +2,8 @@
   <div class='nav-wrapper container'>
     <div class='col s12 truncate'>
       <a href='/' class='breadcrumb'>Top</a>
-      <a href='/teams/<%= @entry['team_id'] %>' class='breadcrumb'><%= @entry['team_name'] %></a>
-      <a href='/entries/<%= @entry['entry_id'] %>' class='breadcrumb'><%= @entry['title'] %></a>
+      <a href='/teams/<%= @entry['team_id'] %>' class='breadcrumb'><%= h(@entry['team_name']) %></a>
+      <a href='/entries/<%= @entry['entry_id'] %>' class='breadcrumb'><%= h(@entry['title']) %></a>
     </div>
   </div>
 </nav>
@@ -14,11 +14,11 @@
       <div class='card'>
         <div class='card-image'>
           <div class='light-blue' style='height: 150px;'></div>
-          <span class='card-title'><%= @entry['title'] %></span>
+          <span class='card-title'><%= h(@entry['title']) %></span>
         </div>
         <div class='card-content'>
           <div>
-            <%= markdown.render(@entry['summary']) %>
+            <%= markdown.render(h(@entry['summary'])) %>
           </div>
           <div class='right-align' style='margin-top: 1em;'>
             <div class='chip light-blue lighten-3'>
