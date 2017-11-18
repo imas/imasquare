@@ -21,6 +21,8 @@ services:
       - datastore
 
   app_base: &app_base
+    volumes:
+      - .:/imas
     build:
       context: .
       dockerfile: Dockerfile-dev

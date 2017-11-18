@@ -15,7 +15,6 @@ RUN mkdir imas
 ENV DISPLAY :99
 
 WORKDIR /imas
-ADD . .
 ENV DOCKER 1
 ENV BUNDLE_APP_CONFIG .bundle
 ENV EMBULK_BUNDLE /repro/embulk/emr
