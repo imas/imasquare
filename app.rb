@@ -1,6 +1,7 @@
 require 'mysql2-cs-bind'
 require 'sinatra/base'
 require 'omniauth-slack'
+require 'redcarpet'
 
 class Imasquare < Sinatra::Base
   use Rack::Session::Cookie,
@@ -16,6 +17,10 @@ class Imasquare < Sinatra::Base
   end
 
   helpers do
+    def markdown
+      @markdown ||= Redcarpet::Markdown.new(Redcarpet::Render::HTML, autolink: true, tables: true)
+    end
+
     def current_user
       if session[:user_id]
         @current_user ||= db.xquery(

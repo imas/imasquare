@@ -17,7 +17,9 @@
           <span class='card-title'><%= @entry['title'] %></span>
         </div>
         <div class='card-content'>
-          <p><%= @entry['summary'] %></p>
+          <div>
+            <%= markdown.render(@entry['summary']) %>
+          </div>
           <div class='right-align' style='margin-top: 1em;'>
             <div class='chip light-blue lighten-3'>
               <img src='<%= @entry['avatar_url'] %>' alt='<%= @entry['author_name'] %>' />

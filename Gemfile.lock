@@ -73,6 +73,7 @@ GEM
       rack
     raindrops (0.19.0)
     rake (12.2.1)
+    redcarpet (3.4.0)
     ridgepole (0.7.0)
       activerecord (>= 5.0.1, < 6)
       diffy
@@ -112,10 +113,11 @@ DEPENDENCIES
   omniauth
   omniauth-slack
   pry
+  redcarpet
   ridgepole
   sinatra
   sinatra-contrib
   unicorn
 
 BUNDLED WITH
-   1.16.0.pre.2
+   1.16.0
