@@ -232,16 +232,33 @@ class Imasquare < Sinatra::Base
   end
 
   get '/teams/:team_id/entries/new' do
-    # TODO: 権限チェック
     query = <<~SQL
-      SELECT id, name FROM teams WHERE teams.id = ?
+      SELECT teams.id, name FROM teams
+      INNER JOIN users_teams AS ut ON teams.id = ut.team_id
+      WHERE teams.id = ? AND ut.user_id = ?
     SQL
-    @team = db.xquery(query, params['team_id']).first
-    erb 'entries/new'.to_sym
+    @team = db.xquery(query, params['team_id'], current_user['id']).first
+
+    if @team
+      erb 'entries/new'.to_sym
+    else
+      redirect '/', 403
+    end
   end
 
   post '/teams/:team_id/entries' do
-    # TODO: 権限チェック
+    query = <<~SQL
+      SELECT teams.id, name FROM teams
+      INNER JOIN users_teams AS ut ON teams.id = ut.team_id
+      WHERE teams.id = ? AND ut.user_id = ?
+    SQL
+    @team = db.xquery(query, params['team_id'], current_user['id']).first
+
+    unless @team
+      redirect '/', 403
+      return
+    end
+
     query = <<~SQL
       INSERT INTO entries (author_id, team_id, title, summary, created_at, updated_at)
       VALUES (?, ?, ?, ?, NOW(), NOW())

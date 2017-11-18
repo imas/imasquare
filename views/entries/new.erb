@@ -10,11 +10,6 @@
 <div class='container section'>
   <p><%= @team['name'] %>の発表として登録します。</p>
 
-  <ul>
-    <li>個人かチームか(チームに持たせても良いかも)</li>
-    <li>発表順どうしたいか</li>
-  </ul>
-
   <form action='/teams/<%= @team['id'] %>/entries' method='post' class='col s12'>
     <div class='row'>
       <div class='input-field col s12'>
