@@ -19,7 +19,7 @@ class Imasquare < Sinatra::Base
   helpers do
     alias_method :h, :escape_html
     def markdown
-      @markdown ||= Redcarpet::Markdown.new(Redcarpet::Render::HTML, autolink: true, tables: true)
+      @markdown ||= Redcarpet::Markdown.new(Redcarpet::Render::HTML.new(hard_wrap: true), autolink: true, tables: true)
     end
 
     def current_user
@@ -102,6 +102,7 @@ class Imasquare < Sinatra::Base
       FROM entries
       INNER JOIN teams ON teams.id = entries.team_id
       INNER JOIN users ON entries.author_id = users.id
+      ORDER BY entries.updated_at DESC
     SQL
     @entries = db.query(query)
     erb :home
@@ -173,7 +174,7 @@ class Imasquare < Sinatra::Base
     query = <<~SQL
       SELECT entries.id, entries.title, users.id AS author_id, users.nickname AS author_name, users.avatar_url FROM entries
       INNER JOIN users ON entries.author_id = users.id
-      WHERE entries.team_id = ?
+      WHERE entries.team_id = ? ORDER BY entries.updated_at DESC
     SQL
 
     @entries = db.xquery(query, params['team_id'])
