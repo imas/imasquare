@@ -71,6 +71,18 @@ class Imasquare < Sinatra::Base
       @teams = db.query(query)
 
       query = <<~SQL
+        SELECT teams.id AS team_id, users.id, users.nickname, users.avatar_url FROM users
+        INNER JOIN users_teams AS ut ON users.id = ut.user_id
+        INNER JOIN teams ON ut.team_id = teams.id
+        WHERE teams.id IN (?)
+      SQL
+      team_member = db.xquery(query, @teams.map { |t| t['id'] })
+
+      @teams.each do |team|
+        team['members'] = team_member.select { |tm| tm['team_id'] == team['id'] }
+      end
+
+      query = <<~SQL
         SELECT
           entries.id, title,
           teams.id AS team_id, teams.name AS team_name,
