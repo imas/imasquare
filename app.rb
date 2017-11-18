@@ -25,6 +25,14 @@ class Imasquare < Sinatra::Base
       end
     end
 
+    def logined?
+      !current_user.nil?
+    end
+
+    def login_required!
+      redirect('/', 303) unless logined?
+    end
+
     def db
       @db_client ||= Mysql2::Client.new(
         host: ENV.fetch('IMASQUARE_DB_HOST', 'localhost'),
@@ -122,12 +130,12 @@ class Imasquare < Sinatra::Base
   end
 
   get '/teams/new' do
-    redirect('/', 303) unless current_user
+    login_required!
     erb 'teams/new'.to_sym
   end
 
   post '/teams' do
-    redirect('/', 303) unless current_user
+    login_required!
     query = <<~SQL
       INSERT INTO teams (name, description, created_at, updated_at)
       VALUES (?, ?, NOW(), NOW())
@@ -174,6 +182,7 @@ class Imasquare < Sinatra::Base
   end
 
   post '/teams/:team_id/join' do
+    login_required!
     query = <<~SQL
       SELECT users.id, users.nickname, ut.team_id, ut.role FROM users_teams AS ut
       INNER JOIN users ON ut.user_id = users.id
@@ -193,6 +202,7 @@ class Imasquare < Sinatra::Base
   end
 
   get '/teams/:team_id/leave' do
+    login_required!
     query = <<~SQL
       SELECT users.id, users.nickname, ut.team_id, ut.role FROM users_teams AS ut
       INNER JOIN users ON ut.user_id = users.id
@@ -200,7 +210,6 @@ class Imasquare < Sinatra::Base
     SQL
     members = db.xquery(query, params['team_id'])
     ut = members.find { |m| m['id'] == current_user['id'] }
-    return 403 if ut.nil?
     return 403 if ut['role'] == 'leader'
 
     query = <<~SQL
@@ -211,6 +220,7 @@ class Imasquare < Sinatra::Base
   end
 
   get '/teams/:team_id/edit' do
+    login_required!
     query = <<~SQL
       SELECT teams.id, teams.name, description, users.id AS leader_id, users.nickname AS leader_name FROM teams
       INNER JOIN users_teams AS ut ON teams.id = ut.team_id AND ut.role = 'leader'
@@ -224,6 +234,8 @@ class Imasquare < Sinatra::Base
   end
 
   post '/teams/:team_id' do
+    login_required!
+
     ut = db.xquery('SELECT user_id FROM users_teams WHERE team_id = ? AND role = "leader"', params['team_id']).first
     return 403 if ut['user_id'] != current_user['id']
 
@@ -232,6 +244,8 @@ class Imasquare < Sinatra::Base
   end
 
   get '/teams/:team_id/entries/new' do
+    login_required!
+
     query = <<~SQL
       SELECT teams.id, name FROM teams
       INNER JOIN users_teams AS ut ON teams.id = ut.team_id
@@ -247,6 +261,8 @@ class Imasquare < Sinatra::Base
   end
 
   post '/teams/:team_id/entries' do
+    login_required!
+
     query = <<~SQL
       SELECT teams.id, name FROM teams
       INNER JOIN users_teams AS ut ON teams.id = ut.team_id
@@ -283,6 +299,8 @@ class Imasquare < Sinatra::Base
   end
 
   get '/entries/:entry_id/edit' do
+    login_required!
+
     query = <<~SQL
       SELECT entries.id, entries.title, entries.summary, users.id AS author_id, teams.id AS team_id, teams.name AS team_name
       FROM entries
@@ -297,6 +315,8 @@ class Imasquare < Sinatra::Base
   end
 
   post '/entries/:entry_id' do
+    login_required!
+
     query = <<~SQL
       SELECT entries.id, entries.title, entries.summary, users.id AS author_id
       FROM entries INNER JOIN users ON entries.author_id = users.id WHERE entries.id = ?
