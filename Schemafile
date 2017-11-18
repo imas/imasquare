@@ -30,12 +30,17 @@ add_foreign_key "users_teams", "teams", name: "fk_team_id_on_users_teams", on_de
 add_foreign_key "users_teams", "users", name: "fk_user_id_on_users_teams", on_delete: :cascade
 
 create_table "entries", id: :bigint, unsigned: true, force: :cascade, options: "ENGINE=InnoDB DEFAULT CHARSET=utf8mb4" do |t|
-  t.string "title", limit: 127, null: false
-  t.text "summary", null: false
-  t.string "order_request", default: "none", null: false
-  t.integer "presentation_order", unsigned: true
   t.bigint "team_id", null: false, unsigned: true
   t.string "author_id", limit: 31, null: false
+  t.string "title", limit: 127, null: false
+  t.text "summary", null: false
+  t.boolean "slide_available", default: false, null: false
+  t.boolean "demo_available", default: false, null: false
+  t.string "order_request", default: "none", null: false
+  t.integer "order", unsigned: true
+  t.integer "time_request", unsigned: true, default: 5, null: false
+  t.integer "time", unsigned: true, default: 3, null: false
+  t.text "note"
   t.datetime "created_at", null: false
   t.datetime "updated_at", null: false
   t.index ["author_id"], name: "fk_user_id_on_entries"

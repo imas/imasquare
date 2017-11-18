@@ -19,8 +19,53 @@
     </div>
     <div class='row'>
       <div class='input-field col s12'>
-        <label for='name'>概要(markdownが使えます)</label>
+        <select name='slide_available'>
+          <option value=1>はい</option>
+          <option value=0 selected>いいえ</option>
+        </select>
+        <label for='slide_available'>プロジェクターを使いますか？</label>
+      </div>
+    </div>
+    <div class='row'>
+      <div class='input-field col s12'>
+        <select name='demo_available'>
+          <option value=1>はい</option>
+          <option value=0 selected>いいえ</option>
+        </select>
+        <label for='demo_available'>デモはありますか？</label>
+      </div>
+    </div>
+    <div class='row'>
+      <div class='input-field col s12'>
+        <label for='summary'>概要(markdownが使えます)</label>
         <textarea name='summary' class='materialize-textarea'></textarea>
+      </div>
+    </div>
+    <div class='row'>
+      <div class='input-field col s12'>
+        <select name='time_request'>
+          <option value=3>3分(プロデューサーLT・簡単に説明)</option>
+          <option value=5 selected>5分(標準)</option>
+          <option value=8>8分(デモをやる人向け)</option>
+        </select>
+        <label for='time_request'>持ち時間の希望(参考にします)</label>
+      </div>
+    </div>
+    <div class='row'>
+      <div class='input-field col s12'>
+        <select name='order_request'>
+          <option value="none" selected>なし</option>
+          <option value="earlier">最初の方</option>
+          <option value="middle">真ん中あたり</option>
+          <option value="later">後の方</option>
+        </select>
+        <label for='order_request'>発表順の希望(参考にします)</label>
+      </div>
+    </div>
+    <div class='row'>
+      <div class='input-field col s12'>
+        <label for='note'>備考</label>
+        <textarea name='note' class='materialize-textarea'></textarea>
       </div>
     </div>
     <input type='submit' value='登録' class='waves-effect waves-light btn blue' />

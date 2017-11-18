@@ -276,10 +276,16 @@ class Imasquare < Sinatra::Base
     end
 
     query = <<~SQL
-      INSERT INTO entries (author_id, team_id, title, summary, created_at, updated_at)
-      VALUES (?, ?, ?, ?, NOW(), NOW())
+      INSERT INTO entries
+      (author_id, team_id, title, summary, note, slide_available, demo_available, time_request, order_request, created_at, updated_at)
+      VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, NOW(), NOW())
     SQL
-    db.xquery(query, current_user['id'], params['team_id'], params['title'], params['summary'])
+    db.xquery(
+      query,
+      current_user['id'], params['team_id'], params['title'], params['note'],
+      params['slide_available'].to_i, params['demo_available'],
+      params['time_request'], params['order_request']
+    )
     entry_id = db.last_id
     redirect("/entries/#{entry_id}", 303)
   end
@@ -302,7 +308,9 @@ class Imasquare < Sinatra::Base
     login_required!
 
     query = <<~SQL
-      SELECT entries.id, entries.title, entries.summary, users.id AS author_id, teams.id AS team_id, teams.name AS team_name
+      SELECT
+        entries.*,
+        users.id AS author_id, teams.id AS team_id, teams.name AS team_name
       FROM entries
       INNER JOIN users ON entries.author_id = users.id
       INNER JOIN teams ON entries.team_id = teams.id
@@ -324,7 +332,19 @@ class Imasquare < Sinatra::Base
     entry = db.xquery(query, params['entry_id']).first
     return redirect("/entries/#{entry['id']}", 403) unless current_user['id'] == entry['author_id']
 
-    db.xquery('UPDATE entries SET title = ?, summary = ?, updated_at = NOW() WHERE id = ?', params['title'], params['summary'], params['entry_id'])
+    query = <<~SQL
+      UPDATE entries
+      SET title = ?, summary = ?, note = ?,
+      slide_available = ?, demo_available = ?,
+      time_request = ?, order_request = ?,
+      updated_at = NOW() WHERE id = ?
+    SQL
+    db.xquery(
+      query,
+      params['title'], params['summary'], params['note'],
+      params['slide_available'].to_i, params['demo_available'].to_i,
+      params['time_request'], params['order_request'], params['entry_id']
+    )
     redirect("/entries/#{entry['id']}", 303)
   end
 
