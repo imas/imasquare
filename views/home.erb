@@ -25,6 +25,9 @@
               <% team['members'].each do |member| %>
                 <img src='<%= member['avatar_url'] %>' alt='<%= member['nickname'] %>' class='circle' style='width: 20px; height:20px; vertical-align: text-bottom;' />
               <% end %>
+              <% if team['is_single'] == 1 %>
+                <span class="new badge blue lighten-2" data-badge-caption=''>個人チーム</span>
+              <% end %>
             </a>
           <% end %>
         <% else %>

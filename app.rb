@@ -75,7 +75,7 @@ class Imasquare < Sinatra::Base
 
   get '/home' do
     query = <<~SQL
-      SELECT teams.id, teams.name, users.id AS leader_id, users.nickname AS leader_name FROM teams
+      SELECT teams.id, teams.name, teams.is_single, users.id AS leader_id, users.nickname AS leader_name FROM teams
       INNER JOIN users_teams AS ut ON teams.id = ut.team_id AND ut.role = 'leader'
       INNER JOIN users ON ut.user_id = users.id
     SQL
@@ -134,11 +134,12 @@ class Imasquare < Sinatra::Base
 
   post '/teams' do
     login_required!
+
     query = <<~SQL
-      INSERT INTO teams (name, description, created_at, updated_at)
-      VALUES (?, ?, NOW(), NOW())
+      INSERT INTO teams (name, description, is_single, created_at, updated_at)
+      VALUES (?, ?, ?, NOW(), NOW())
     SQL
-    db.xquery(query, params['name'], params['description'])
+    db.xquery(query, params['name'], params['description'], params['is_single'].to_i)
     team_id = db.last_id
 
     query = <<~SQL
@@ -152,7 +153,7 @@ class Imasquare < Sinatra::Base
 
   get '/teams/:team_id' do
     query = <<~SQL
-      SELECT teams.id, teams.name, description, users.id AS leader_id, users.nickname AS leader_name FROM teams
+      SELECT teams.id, teams.name, description, is_single, users.id AS leader_id, users.nickname AS leader_name FROM teams
       INNER JOIN users_teams AS ut ON teams.id = ut.team_id AND ut.role = 'leader'
       INNER JOIN users ON ut.user_id = users.id
       WHERE teams.id = ?
@@ -220,7 +221,7 @@ class Imasquare < Sinatra::Base
   get '/teams/:team_id/edit' do
     login_required!
     query = <<~SQL
-      SELECT teams.id, teams.name, description, users.id AS leader_id, users.nickname AS leader_name FROM teams
+      SELECT teams.id, teams.name, description, is_single, users.id AS leader_id, users.nickname AS leader_name FROM teams
       INNER JOIN users_teams AS ut ON teams.id = ut.team_id AND ut.role = 'leader'
       INNER JOIN users ON ut.user_id = users.id
       WHERE teams.id = ?
@@ -237,7 +238,7 @@ class Imasquare < Sinatra::Base
     ut = db.xquery('SELECT user_id FROM users_teams WHERE team_id = ? AND role = "leader"', params['team_id']).first
     return 403 if ut['user_id'] != current_user['id']
 
-    db.xquery('UPDATE teams SET name = ?, description = ?, updated_at = NOW() WHERE id = ?', params['name'], params['description'], params['team_id'])
+    db.xquery('UPDATE teams SET name = ?, description = ?, is_single = ?, updated_at = NOW() WHERE id = ?', params['name'], params['description'], params['is_single'].to_i, params['team_id'])
     redirect("/teams/#{params['team_id']}", 303)
   end
 

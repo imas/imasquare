@@ -13,7 +13,7 @@
         <div class='card-image'>
           <div class='light-blue' style='height: 150px;'></div>
           <span class='card-title'><%= @team['name'] %></span>
-          <% if logined? %>
+          <% if logined? && @team['is_single'] == 0 %>
             <% unless @members.map { |m| m['id'] }.include?(current_user&.[]('id')) %>
               <form action='/teams/<%= @team['id'] %>/join' method='POST'>
                 <button type='submit' class='btn-floating btn-large halfway-fab waves-effect waves-light blue'>
