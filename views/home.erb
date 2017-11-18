@@ -59,12 +59,43 @@
       </ul>
     </div>
   </div>
-  <div class='row center'>
-    <div class='col s12'>
-      <h4>使い方</h4>
-      <p>チームを(作成|参加)して、チームに対して発表を登録してください。枠の配分は発表単位で行います。</p>
+  <% if logined? %>
+    <div class='row center'>
+      <div class='col s12'>
+        <h4>発表登録の方法</h4>
+        <p>
+          発表の管理はIM@Square上で行います。<br />
+          発表を登録するにはチームに所属して、そのチームに対して発表を登録しなければなりません。<br />
+          これは個人で参加する場合も同様です。
+        </p>
+        <div class='card-panel'>
+          <h5>個人参加・チームを立ち上げる場合</h5>
+          <p><img src='img/howtouse-1.png' style='border: 1px solid grey' /></p>
+          <p>ログインを行い、トップページからチームを作成を選びます。</p>
+          <p><img src='img/howtouse-2.png' style='border: 1px solid grey' /></p>
+          <p>必要事項を記入します。「一人でもくもく」を選択すると、他の人がチームに参加できなくなります。</p>
+          <p><img src='img/howtouse-3.png' style='border: 1px solid grey' /></p>
+          <p>チームのページが作成されました。右下のアイコンを選択します。</p>
+          <p><img src='img/howtouse-4.png' style='border: 1px solid grey' /></p>
+          <p>右側のアイコンを選択します。</p>
+        </div>
+        <div class='card-panel'>
+          <h5>既にあるチームに参加する場合</h5>
+          <p><img src='img/howtouse-5.png' style='border: 1px solid grey' /></p>
+          <p>チーム名の隣にあるアイコンを選択します。</p>
+          <p><img src='img/howtouse-6.png' style='border: 1px solid grey' /></p>
+          <p>右側のアイコンを選択します。</p>
+        </div>
+        <div class='card-panel'>
+          <h5>発表の登録・編集</h5>
+          <p><img src='img/howtouse-7.png' style='border: 1px solid grey' /></p>
+          <p>必要事項を入力します。</p>
+          <p><img src='img/howtouse-8.png' style='border: 1px solid grey' /></p>
+          <p>発表を登録した人のみ、発表内容の編集ができます。</p>
+        </div>
+      </div>
     </div>
-  </div>
+  <% end %>
 </div>
 
 <script type='text/javascript'>
