@@ -282,7 +282,7 @@ class Imasquare < Sinatra::Base
     SQL
     db.xquery(
       query,
-      current_user['id'], params['team_id'], params['title'], params['note'],
+      current_user['id'], params['team_id'], params['title'], params['summary'], params['note'],
       params['slide_available'].to_i, params['demo_available'],
       params['time_request'], params['order_request']
     )
