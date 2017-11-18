@@ -22,7 +22,7 @@
           <% end %>
         </div>
         <div class='card-content'>
-          <p class='flow-text'><%= @team['description'] %></p>
+          <p><%= @team['description'] %></p>
           <div class='right-align' style='margin-top: 1em;'>
             <% @members.each do |member| %>
               <a href='/users/<%= member['id'] %>'>

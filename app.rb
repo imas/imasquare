@@ -271,7 +271,7 @@ class Imasquare < Sinatra::Base
   get '/entries/:entry_id' do
     query = <<~SQL
       SELECT entries.id AS entry_id, entries.title, entries.summary,
-      users.id AS author_id, users.nickname AS author_name,
+      users.id AS author_id, users.nickname AS author_name, users.avatar_url,
       teams.id AS team_id, teams.name AS team_name FROM entries
       INNER JOIN users ON entries.author_id = users.id
       INNER JOIN teams ON entries.team_id = teams.id

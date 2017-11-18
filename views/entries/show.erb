@@ -9,8 +9,25 @@
 </nav>
 
 <div class='container section'>
-  <p><%= @entry['summary'] %></p>
-  <p>登録者: <%= @entry['author_name'] %></p>
+  <div class='row'>
+    <div class='col s12'>
+      <div class='card'>
+        <div class='card-image'>
+          <div class='light-blue' style='height: 150px;'></div>
+          <span class='card-title'><%= @entry['title'] %></span>
+        </div>
+        <div class='card-content'>
+          <p><%= @entry['summary'] %></p>
+          <div class='right-align' style='margin-top: 1em;'>
+            <div class='chip light-blue lighten-3'>
+              <img src='<%= @entry['avatar_url'] %>' alt='<%= @entry['author_name'] %>' />
+              <%= @entry['author_name'] %>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
 </div>
 
 <% if @entry['author_id'] == current_user['id'] %>
