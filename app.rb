@@ -63,12 +63,6 @@ class Imasquare < Sinatra::Base
     enable :sessions
   end
 
-  configure :production do
-    use Rack::Auth::Basic do |username, password|
-      username == 'imas' && password == 'saiko'
-    end
-  end
-
   configure :development do
     require 'sinatra/reloader'
     require 'pry'
