@@ -25,7 +25,7 @@ class Imasquare < Sinatra::Base
     def current_user
       if session[:user_id]
         @current_user ||= db.xquery(
-          'SELECT id, nickname, avatar_url FROM users WHERE id = ?',
+          'SELECT id, nickname, is_admin, avatar_url FROM users WHERE id = ?',
           session[:user_id]
         ).first
       end
@@ -37,6 +37,14 @@ class Imasquare < Sinatra::Base
 
     def login_required!
       redirect('/', 303) unless logined?
+    end
+
+    def admin_user?
+      current_user&.[]('is_admin') == 1
+    end
+
+    def admin_required!
+      redirect('/', 303) unless admin_user?
     end
 
     def db
@@ -347,6 +355,37 @@ class Imasquare < Sinatra::Base
       params['time_request'], params['order_request'], params['entry_id']
     )
     redirect("/entries/#{entry['id']}", 303)
+  end
+
+  get '/admin' do
+    admin_required!
+
+    @users = db.xquery('SELECT * FROM users')
+    query = <<~SQL
+      SELECT entries.*, users.nickname AS author_name, teams.name AS team_name FROM entries
+      INNER JOIN users ON entries.author_id = users.id
+      INNER JOIN teams ON entries.team_id = teams.id
+    SQL
+    @entries = db.xquery(query)
+
+    erb 'admin/index'.to_sym
+  end
+
+  post '/admin/entries/:entry_id' do
+    admin_required!
+    db.xquery('UPDATE entries SET author_id = ? WHERE id = ?', params[:author_id], params[:entry_id])
+    redirect('/admin', 303)
+  end
+
+  post '/admin/users' do
+    admin_required!
+    query = <<~SQL
+      INSERT INTO users (id, nickname, avatar_url, created_at, updated_at)
+      VALUES (?, ?, ?, NOW(), NOW())
+      ON DUPLICATE KEY UPDATE nickname = ?, avatar_url = ?, updated_at = NOW()
+    SQL
+    db.xquery(query, params[:id], params[:nickname], params[:avatar_url], params[:nickname], params[:avatar_url])
+    redirect('/admin', 303)
   end
 
   get '/auth/slack/callback' do
