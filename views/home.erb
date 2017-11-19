@@ -6,7 +6,7 @@
       </a>
     </div>
     <div class='row'>
-      <div class='col s12 center'>
+      <div class='col s12 center' id='time-component'>
         <span style='font-size: 3em;'>残り</span>
         <span id='days' style='font-size: 5em;'>00</span>
         <span style='font-size: 3em;'>日と</span>
@@ -118,6 +118,11 @@ window.onload = function() {
   };
   var tick = function() {
     calcRestTime(function(day, hour, min, sec) {
+      if (day < 0 || hour < 0 || min < 0 || sec < 0) {
+        document.getElementById('time-component').innerText = '時間切れ';
+        return;
+      }
+
       days.innerText = day;
       var paddedHour = hour < 10 ? '0' + hour : hour;
       var paddedMin = min < 10 ? '0' + min : min;
