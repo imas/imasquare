@@ -32,18 +32,22 @@
     </style>
   </head>
   <body>
-    <ul id='nav-dropdown' class='dropdown-content'>
-      <li><a href='/auth/slack/destroy'>Logout</a></li>
-      <% if admin_user? %>
-        <li><a href='/admin'>Admin</a></li>
-      <% end %>
-    </ul>
+    <% if logined? %>
+      <ul id='nav-dropdown' class='dropdown-content'>
+        <% if admin_user? %>
+          <li><a href='/admin'>Admin</a></li>
+        <% end %>
+        <li><a href='/teams/new'>チーム作成</a></li>
+        <li><a href='/entries/new'>発表登録</a></li>
+        <li><a href='/auth/slack/destroy'>Logout</a></li>
+      </ul>
+    <% end %>
     <nav class='light-blue lighten-1' role='navigation'>
       <div class='nav-wrapper container'>
         <a id='logo-container' href='/' class='brand-logo'>IM@Square</a>
         <ul id='nav-mobile' class='right hide-on-med-and-down'>
           <% if current_user %>
-            <li><a class='dropdown-button' href='#!' data-activates='nav-dropdown'><img src='<%= current_user['avatar_url'] %>' class='circle' style='width: 20px; height: 20px; vertical-align: text-bottom;' alt='<%= current_user['nickname'] %>' />&nbsp;<%= current_user['nickname'] %></a></li>
+            <li><a class='dropdown-button' href='#!' data-activates='nav-dropdown' style='width: 150px;'><img src='<%= current_user['avatar_url'] %>' class='circle' style='width: 20px; height: 20px; vertical-align: text-bottom;' alt='<%= current_user['nickname'] %>' />&nbsp;<%= current_user['nickname'] %></a></li>
           <% else %>
             <li><a href='/auth/slack'>Login</a></li>
           <% end %>

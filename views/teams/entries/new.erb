@@ -2,22 +2,15 @@
   <div class='nav-wrapper container'>
     <div class='col s12'>
       <a href='/' class='breadcrumb'>Top</a>
-      <a href='/entries/new' class='breadcrumb'>発表の登録</a>
+      <a href='/teams/<%= @team['id'] %>' class='breadcrumb'><%= @team['name'] %></a>
+      <a href='/teams/<%= @team['id'] %>/entries/new' class='breadcrumb'>発表の登録</a>
     </div>
   </div>
 </nav>
 <div class='container section'>
-  <form action='/entries' method='post' class='col s12'>
-    <div class='row'>
-      <div class='input-field col s12'>
-        <select name='team_id'>
-          <% @teams.each do |team| %>
-            <option value=<%= team['id'] %>><%= team['name'] %></option>
-          <% end %>
-        </select>
-        <label for='team_id'>チーム</label>
-      </div>
-    </div>
+  <p><%= @team['name'] %>の発表として登録します。</p>
+
+  <form action='/teams/<%= @team['id'] %>/entries' method='post' class='col s12'>
     <div class='row'>
       <div class='input-field col s12'>
         <label for='name'>タイトル</label>
@@ -75,8 +68,6 @@
         <textarea name='note' class='materialize-textarea'></textarea>
       </div>
     </div>
-    <button class='waves-effect waves-light btn blue' type='submit'>
-      登録
-    </button>
+    <input type='submit' value='登録' class='waves-effect waves-light btn blue' />
   </form>
 </div>

@@ -257,10 +257,57 @@ class Imasquare < Sinatra::Base
     @team = db.xquery(query, params['team_id'], current_user['id']).first
 
     if @team
-      erb 'entries/new'.to_sym
+      erb 'teams/entries/new'.to_sym
     else
       redirect '/', 403
     end
+  end
+
+  get '/entries/new' do
+    login_required!
+
+    query = <<~SQL
+      SELECT teams.id, name FROM teams
+      INNER JOIN users_teams AS ut ON teams.id = ut.team_id
+      WHERE ut.user_id = ?
+    SQL
+    @teams = db.xquery(query, current_user['id'])
+
+    if @teams.any?
+      erb 'entries/new'.to_sym
+    else
+      redirect '/teams/new', 303
+    end
+  end
+
+  post '/entries' do
+    login_required!
+
+    query = <<~SQL
+      SELECT teams.id, name FROM teams
+      INNER JOIN users_teams AS ut ON teams.id = ut.team_id
+      WHERE teams.id = ? AND ut.user_id = ?
+    SQL
+    @team = db.xquery(query, params['team_id'], current_user['id']).first
+
+    unless @team
+      redirect '/', 403
+      return
+    end
+
+    query = <<~SQL
+      INSERT INTO entries
+      (author_id, team_id, title, summary, note, slide_available, demo_available, time_request, order_request, created_at, updated_at)
+      VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, NOW(), NOW())
+    SQL
+    db.xquery(
+      query,
+      current_user['id'], params['team_id'], params['title'], params['summary'], params['note'],
+      params['slide_available'].to_i, params['demo_available'],
+      params['time_request'], params['order_request']
+    )
+    entry_id = db.last_id
+    redirect("/entries/#{entry_id}", 303)
   end
 
   post '/teams/:team_id/entries' do
