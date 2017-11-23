@@ -193,12 +193,14 @@ class Imasquare < Sinatra::Base
     SQL
 
     members = db.xquery(query, params['team_id'])
-    unless members.map { |m| m['id'] }.include?(current_user['id'])
+    user_id = (admin_user? && params['admin'] && params['user_id']) ? params['user_id'] : current_user['id']
+
+    unless members.map { |m| m['id'] }.include?(user_id)
       query = <<~SQL
         INSERT INTO users_teams (user_id, team_id, role, created_at, updated_at)
         VALUES (?, ?, "member", NOW(), NOW())
       SQL
-      db.xquery(query, current_user['id'], params['team_id'])
+      db.xquery(query, user_id, params['team_id'])
     end
 
     redirect("/teams/#{members.first['team_id']}", 303)
@@ -212,13 +214,15 @@ class Imasquare < Sinatra::Base
       WHERE ut.team_id = ?
     SQL
     members = db.xquery(query, params['team_id'])
-    ut = members.find { |m| m['id'] == current_user['id'] }
+    user_id = (admin_user? && params['admin'] && params['user_id']) ? params['user_id'] : current_user['id']
+
+    ut = members.find { |m| m['id'] == user_id }
     return 403 if ut['role'] == 'leader'
 
     query = <<~SQL
       DELETE FROM users_teams WHERE user_id = ? AND team_id = ?
     SQL
-    db.xquery(query, current_user['id'], params['team_id'])
+    db.xquery(query, user_id, params['team_id'])
     redirect("/teams/#{params['team_id']}", 303)
   end
 
@@ -402,6 +406,7 @@ class Imasquare < Sinatra::Base
     admin_required!
 
     @users = db.xquery('SELECT * FROM users')
+
     query = <<~SQL
       SELECT entries.*, users.nickname AS author_name, teams.name AS team_name FROM entries
       INNER JOIN users ON entries.author_id = users.id
@@ -409,12 +414,42 @@ class Imasquare < Sinatra::Base
     SQL
     @entries = db.xquery(query)
 
+    query = <<~SQL
+      SELECT teams.id, teams.name, teams.is_single, users.id AS leader_id, users.nickname AS leader_name FROM teams
+      INNER JOIN users_teams AS ut ON teams.id = ut.team_id AND ut.role = 'leader'
+      INNER JOIN users ON ut.user_id = users.id
+    SQL
+    @teams = db.xquery(query)
+
+    query = <<~SQL
+      SELECT teams.id AS team_id, users.id, users.nickname, users.avatar_url FROM users
+      INNER JOIN users_teams AS ut ON users.id = ut.user_id
+      INNER JOIN teams ON ut.team_id = teams.id
+      WHERE teams.id IN (?)
+    SQL
+    team_member = db.xquery(query, @teams.map { |t| t['id'] })
+    @teams.each do |team|
+      team['members'] = team_member.select { |tm| tm['team_id'] == team['id'] }
+    end
+
     erb 'admin/index'.to_sym
   end
 
   post '/admin/entries/:entry_id' do
     admin_required!
     db.xquery('UPDATE entries SET author_id = ? WHERE id = ?', params[:author_id], params[:entry_id])
+    redirect('/admin', 303)
+  end
+
+  post '/admin/teams/:team_id/destroy' do
+    admin_required!
+    db.xquery('DELETE FROM teams WHERE id = ? LIMIT 1', params[:team_id])
+    redirect('/admin', 303)
+  end
+
+  post '/admin/entries/:entry_id/destroy' do
+    admin_required!
+    db.xquery('DELETE FROM entries WHERE id = ? LIMIT 1', params[:entry_id])
     redirect('/admin', 303)
   end
 

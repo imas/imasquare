@@ -37,6 +37,62 @@
               <td><%= entry['order_request'] %></td>
               <td><%= entry['time_request'] %></td>
               <td><%= entry['note'] %></td>
+              <td>
+                <form action='/admin/entries/<%= entry['id'] %>/destroy' method='post'>
+                  <button class="btn waves-effect waves-light blue" type="submit">Destroy</button>
+                </form>
+              </td>
+            </tr>
+          <% end %>
+        </tbody>
+      </table>
+    </div>
+    <div class='col s12'>
+      <h3>Teams</h3>
+      <table class='bordered highlight'>
+        <thead>
+          <tr>
+            <th>id</th>
+            <th>name</th>
+            <th>leader</th>
+            <th>member</th>
+            <th>action</th>
+          </tr>
+        </thead>
+        <tbody>
+          <% @teams.each do |team| %>
+            <tr>
+              <td><%= team['id'] %></td>
+              <td><%= team['name'] %></td>
+              <td><%= team['leader_name'] %></td>
+              <td>
+                <% team['members'].each do |member| %>
+                  <img src='<%= member['avatar_url'] %>' alt='<%= member['nickname'] %>' class='circle' style='width: 20px; height:20px; vertical-align: text-bottom;' />
+                <% end %>
+              </td>
+              <td>
+                <form action='/teams/<%= team['id'] %>/join' method='post'>
+                  <select name='user_id'>
+                    <% @users.each do |user| %>
+                      <option value='<%= user['id'] %>'><%= user['nickname'] %></option>
+                    <% end %>
+                  </select>
+                  <input type='hidden' name='admin' value='1' />
+                  <button class="btn waves-effect waves-light blue" type="submit">Join</button>
+                </form>
+                <form action='/teams/<%= team['id'] %>/leave' method='get'>
+                  <select name='user_id'>
+                    <% @users.each do |user| %>
+                      <option value='<%= user['id'] %>'><%= user['nickname'] %></option>
+                    <% end %>
+                  </select>
+                  <input type='hidden' name='admin' value='1' />
+                  <button class="btn waves-effect waves-light blue" type="submit">Leave</button>
+                </form>
+                <form action='/admin/teams/<%= team['id'] %>/destroy' method='post'>
+                  <button class="btn waves-effect waves-light blue" type="submit">Destroy</button>
+                </form>
+              </td>
             </tr>
           <% end %>
         </tbody>
