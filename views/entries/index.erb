@@ -1,0 +1,36 @@
+<div class='container'>
+  <div class='section'>
+    <div class='row center'>
+      <a href='https://imas.connpass.com/event/70592/' target='_blank'>
+        <img src='img/cover.png' alt='アイマスハッカソン2017'/>
+      </a>
+    </div>
+  </div>
+    <div class='col s12 m12'>
+      <ul class='collection'>
+        <% if @entries.any? %>
+          <% @entries.each do |entry| %>
+            <li class='collection-item avatar' <% if entry['done_at'] %>style='background-color: #eee;'<% end %>>
+              <img src='<%= entry['avatar_url'] %>' alt='<% entry['author_name'] %>' class='circle'>
+              <span class='title'>
+                <a href='/entries/<%= entry['id'] %>'><%= h(entry['title']) %></a>
+                <% if entry['demo_available'] == 1 %>
+                  <span class="new badge orange lighten-2" data-badge-caption=''>デモ</span>
+                <% end %>
+                <% if entry['slide_available'] == 1 %>
+                  <span class="new badge green lighten-2" data-badge-caption=''>プロジェクター</span>
+                <% end %>
+              </span>
+              <p class='grey-text'><small>持ち時間: </small><b><%= entry['time'] %></b> <small>分</small></p>
+              <p class='grey-text'>by <%= entry['author_name'] %> <small>(<a href="/teams/<%= entry['team_id']%>"><%= h(entry['team_name']) %></a>)</small></p>
+            </li>
+          <% end %>
+        <% else %>
+          <li class='collection-item'>
+            登録されている発表はありません。
+          </li>
+        <% end %>
+      </ul>
+    </div>
+  </div>
+</div>

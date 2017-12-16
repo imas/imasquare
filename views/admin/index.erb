@@ -6,40 +6,41 @@
         <thead>
           <tr>
             <th>id</th>
-            <th>team</th>
-            <th>user</th>
             <th>title</th>
-            <th>資料</th>
-            <th>デモ</th>
-            <th>発表順希望</th>
-            <th>時間希望</th>
+            <th>info</th>
             <th>note</th>
+            <th></th>
+            <th></th>
           </tr>
         </thead>
         <tbody>
           <% @entries.each do |entry| %>
             <tr>
               <td><%= entry['id'] %></td>
-              <td><a href='/teams/<%= entry['team_id'] %>' target='_blank'><%= entry['team_name'] %></a></td>
               <td>
-                <form action='/admin/entries/<%= entry['id'] %>' method='post'>
-                  <select name='author_id'>
-                    <% @users.each do |user| %>
-                      <option value='<%= user['id'] %>'<%= entry['author_id'] == user['id'] ? ' selected' : ''%>><%= user['nickname'] %></option>
-                    <% end %>
-                  </select>
-                  <button class="btn waves-effect waves-light blue" type="submit">Update</button>
-                </form>
+                <% if entry['accepted'] == 1 %>
+                  <b>採用済</b>
+                <% end %>
+                <a href='/entries/<%= entry['id'] %>' target='_blank'>
+                  <%= h(entry['title']) %>
+                </a>
+                (<a href='/teams/<%= entry['team_id'] %>' target='_blank'><%= entry['team_name'] %></a>)
               </td>
-              <td><a href='/entries/<%= entry['id'] %>' target='_blank'><%= h(entry['title']) %></a></td>
-              <td><%= entry['slide_available'] == 1 ? 'はい' : 'いいえ' %></td>
-              <td><%= entry['demo_available'] == 1 ? 'はい' : 'いいえ' %></td>
-              <td><%= entry['order_request'] %></td>
-              <td><%= entry['time_request'] %></td>
+              <td>
+                順番:<%= entry['order'] || '指定なし' %>(希望:<%= entry['order_request'] %>)
+                / <%= entry['time'] %>分(希望:<%= entry['time_request'] %>分)
+                <%= entry['slide_available'] == 1 ? '/ スライド' : '' %>
+                <%= entry['demo_available'] == 1 ? '/ デモ' : '' %>
+              </td>
               <td><%= entry['note'] %></td>
               <td>
-                <form action='/admin/entries/<%= entry['id'] %>/destroy' method='post'>
-                  <button class="btn waves-effect waves-light blue" type="submit">Destroy</button>
+                <a class='btn waves-effect waves-light blue' href='/admin/entries/<%= entry['id'] %>/edit'>Edit</a>
+              </td>
+              <td>
+                <form action='/admin/entries/<%= entry['id'] %>/done' method='post'>
+                  <button class="btn waves-effect waves-light blue" type="submit">
+                    <%= entry['done_at'] ? 'Undone' : 'Done' %>
+                  </button>
                 </form>
               </td>
             </tr>

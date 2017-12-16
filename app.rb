@@ -267,6 +267,22 @@ class Imasquare < Sinatra::Base
     end
   end
 
+  get '/entries' do
+    query = <<~SQL
+      SELECT
+        entries.*,
+        teams.id AS team_id, teams.name AS team_name,
+        users.id AS author_id, users.nickname AS author_name, users.avatar_url
+      FROM entries
+      INNER JOIN teams ON teams.id = entries.team_id
+      INNER JOIN users ON entries.author_id = users.id
+      WHERE entries.accepted = 1
+      ORDER BY entries.order
+    SQL
+    @entries = db.query(query)
+    erb 'entries/index'.to_sym
+  end
+
   get '/entries/new' do
     login_required!
 
@@ -411,6 +427,7 @@ class Imasquare < Sinatra::Base
       SELECT entries.*, users.nickname AS author_name, teams.name AS team_name FROM entries
       INNER JOIN users ON entries.author_id = users.id
       INNER JOIN teams ON entries.team_id = teams.id
+      ORDER BY entries.order
     SQL
     @entries = db.xquery(query)
 
@@ -437,13 +454,45 @@ class Imasquare < Sinatra::Base
 
   post '/admin/entries/:entry_id' do
     admin_required!
-    db.xquery('UPDATE entries SET author_id = ? WHERE id = ?', params[:author_id], params[:entry_id])
+    query = <<~SQL
+      UPDATE entries
+      SET author_id = ?, time = ?, entries.order = ?, accepted = ? WHERE id = ?
+    SQL
+
+    db.xquery(query, params[:author_id], params[:time], params[:order], params[:accepted], params[:entry_id])
     redirect('/admin', 303)
   end
 
   post '/admin/teams/:team_id/destroy' do
     admin_required!
     db.xquery('DELETE FROM teams WHERE id = ? LIMIT 1', params[:team_id])
+    redirect('/admin', 303)
+  end
+
+  get '/admin/entries/:entry_id/edit' do
+    admin_required!
+    @users = db.xquery('SELECT * FROM users')
+
+    query = <<~SQL
+      SELECT entries.*, users.nickname AS author_name, teams.name AS team_name FROM entries
+      INNER JOIN users ON entries.author_id = users.id
+      INNER JOIN teams ON entries.team_id = teams.id
+      WHERE entries.id = ?
+    SQL
+    @entry = db.xquery(query, params[:entry_id]).first
+    erb 'admin/entries/edit'.to_sym
+  end
+
+  post '/admin/entries/:entry_id/done' do
+    admin_required!
+    entry = db.xquery('SELECT entries.id, entries.done_at FROM entries WHERE id = ? LIMIT 1', params[:entry_id]).first
+
+    if entry['done_at']
+      db.xquery('UPDATE entries SET done_at = NULL WHERE id = ? LIMIT 1', entry['id'])
+    else
+      db.xquery('UPDATE entries SET done_at = NOW() WHERE id = ? LIMIT 1', entry['id'])
+    end
+
     redirect('/admin', 303)
   end
 
