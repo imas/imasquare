@@ -276,6 +276,7 @@ class Imasquare < Sinatra::Base
       FROM entries
       INNER JOIN teams ON teams.id = entries.team_id
       INNER JOIN users ON entries.author_id = users.id
+      WHERE entries.accepted = 1
       ORDER BY entries.order
     SQL
     @entries = db.query(query)
@@ -453,7 +454,12 @@ class Imasquare < Sinatra::Base
 
   post '/admin/entries/:entry_id' do
     admin_required!
-    db.xquery('UPDATE entries SET author_id = ?, time = ?, entries.order = ? WHERE id = ?', params[:author_id], params[:time], params[:order], params[:entry_id])
+    query = <<~SQL
+      UPDATE entries
+      SET author_id = ?, time = ?, entries.order = ?, accepted = ? WHERE id = ?
+    SQL
+
+    db.xquery(query, params[:author_id], params[:time], params[:order], params[:accepted], params[:entry_id])
     redirect('/admin', 303)
   end
 

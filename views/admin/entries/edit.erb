@@ -29,6 +29,15 @@
         <input type='number' name='time' value='<%= @entry['time'] %>' />
       </div>
     </div>
+    <div class='row'>
+      <div class='col s12'>
+        <select name='accepted'>
+          <option value=1 <%= @entry['accepted'] == 1 ? 'selected' : '' %>>はい</option>
+          <option value=0 <%= @entry['accepted'] == 0 ? 'selected' : '' %>>いいえ</option>
+        </select>
+        <label for='slide_available'>採択</label>
+      </div>
+    </div>
     <button type='submit' class='waves-effect waves-light btn blue'>
       更新
     </button>

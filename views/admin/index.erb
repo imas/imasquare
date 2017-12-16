@@ -17,6 +17,9 @@
             <tr>
               <td><%= entry['id'] %></td>
               <td>
+                <% if entry['accepted'] == 1 %>
+                  <b>採用済</b>
+                <% end %>
                 <a href='/entries/<%= entry['id'] %>' target='_blank'>
                   <%= h(entry['title']) %>
                 </a>

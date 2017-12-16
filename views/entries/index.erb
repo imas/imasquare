@@ -10,7 +10,7 @@
       <ul class='collection'>
         <% if @entries.any? %>
           <% @entries.each do |entry| %>
-            <li class='collection-item avatar'>
+            <li class='collection-item avatar' <% if entry['done_at'] %>style='background-color: #eee;'<% end %>>
               <img src='<%= entry['avatar_url'] %>' alt='<% entry['author_name'] %>' class='circle'>
               <span class='title'>
                 <a href='/entries/<%= entry['id'] %>'><%= h(entry['title']) %></a>
