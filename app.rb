@@ -483,6 +483,19 @@ class Imasquare < Sinatra::Base
     erb 'admin/entries/edit'.to_sym
   end
 
+  post '/admin/entries/:entry_id/done' do
+    admin_required!
+    entry = db.xquery('SELECT entries.id, entries.done_at FROM entries WHERE id = ? LIMIT 1', params[:entry_id]).first
+
+    if entry['done_at']
+      db.xquery('UPDATE entries SET done_at = NULL WHERE id = ? LIMIT 1', entry['id'])
+    else
+      db.xquery('UPDATE entries SET done_at = NOW() WHERE id = ? LIMIT 1', entry['id'])
+    end
+
+    redirect('/admin', 303)
+  end
+
   post '/admin/entries/:entry_id/destroy' do
     admin_required!
     db.xquery('DELETE FROM entries WHERE id = ? LIMIT 1', params[:entry_id])

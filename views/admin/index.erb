@@ -10,6 +10,7 @@
             <th>info</th>
             <th>note</th>
             <th></th>
+            <th></th>
           </tr>
         </thead>
         <tbody>
@@ -34,6 +35,13 @@
               <td><%= entry['note'] %></td>
               <td>
                 <a class='btn waves-effect waves-light blue' href='/admin/entries/<%= entry['id'] %>/edit'>Edit</a>
+              </td>
+              <td>
+                <form action='/admin/entries/<%= entry['id'] %>/done' method='post'>
+                  <button class="btn waves-effect waves-light blue" type="submit">
+                    <%= entry['done_at'] ? 'Undone' : 'Done' %>
+                  </button>
+                </form>
               </td>
             </tr>
           <% end %>
