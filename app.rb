@@ -437,7 +437,7 @@ class Imasquare < Sinatra::Base
 
   post '/admin/entries/:entry_id' do
     admin_required!
-    db.xquery('UPDATE entries SET author_id = ? WHERE id = ?', params[:author_id], params[:entry_id])
+    db.xquery('UPDATE entries SET author_id = ?, time = ?, entries.order = ? WHERE id = ?', params[:author_id], params[:time], params[:order], params[:entry_id])
     redirect('/admin', 303)
   end
 
@@ -445,6 +445,20 @@ class Imasquare < Sinatra::Base
     admin_required!
     db.xquery('DELETE FROM teams WHERE id = ? LIMIT 1', params[:team_id])
     redirect('/admin', 303)
+  end
+
+  get '/admin/entries/:entry_id/edit' do
+    admin_required!
+    @users = db.xquery('SELECT * FROM users')
+
+    query = <<~SQL
+      SELECT entries.*, users.nickname AS author_name, teams.name AS team_name FROM entries
+      INNER JOIN users ON entries.author_id = users.id
+      INNER JOIN teams ON entries.team_id = teams.id
+      WHERE entries.id = ?
+    SQL
+    @entry = db.xquery(query, params[:entry_id]).first
+    erb 'admin/entries/edit'.to_sym
   end
 
   post '/admin/entries/:entry_id/destroy' do
