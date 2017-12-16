@@ -37,7 +37,7 @@ create_table "entries", id: :bigint, unsigned: true, force: :cascade, options: "
   t.boolean "slide_available", default: false, null: false
   t.boolean "demo_available", default: false, null: false
   t.string "order_request", default: "none", null: false
-  t.integer "order", unsigned: true
+  t.integer "order", default: 100, unsigned: true
   t.integer "time_request", unsigned: true, default: 5, null: false
   t.integer "time", unsigned: true, default: 3, null: false
   t.text "note"
