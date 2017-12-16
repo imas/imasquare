@@ -98,7 +98,7 @@ class Imasquare < Sinatra::Base
 
     query = <<~SQL
       SELECT
-        entries.id, title,
+        entries.id, title, demo_available, slide_available,
         teams.id AS team_id, teams.name AS team_name,
         users.id AS author_id, users.nickname AS author_name, users.avatar_url
       FROM entries
