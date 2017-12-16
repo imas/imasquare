@@ -267,6 +267,21 @@ class Imasquare < Sinatra::Base
     end
   end
 
+  get '/entries' do
+    query = <<~SQL
+      SELECT
+        entries.*,
+        teams.id AS team_id, teams.name AS team_name,
+        users.id AS author_id, users.nickname AS author_name, users.avatar_url
+      FROM entries
+      INNER JOIN teams ON teams.id = entries.team_id
+      INNER JOIN users ON entries.author_id = users.id
+      ORDER BY entries.order
+    SQL
+    @entries = db.query(query)
+    erb 'entries/index'.to_sym
+  end
+
   get '/entries/new' do
     login_required!
 
@@ -411,6 +426,7 @@ class Imasquare < Sinatra::Base
       SELECT entries.*, users.nickname AS author_name, teams.name AS team_name FROM entries
       INNER JOIN users ON entries.author_id = users.id
       INNER JOIN teams ON entries.team_id = teams.id
+      ORDER BY entries.order
     SQL
     @entries = db.xquery(query)
 
