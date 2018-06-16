@@ -25,7 +25,7 @@
         </div>
         <div class='card-content'>
           <div class='markdown-text'>
-            <%= markdown.render(h(@team['description'])) %>
+            <%= @team['description'] %>
           </div>
           <div class='right-align' style='margin-top: 1em;'>
             <% @members.each do |member| %>

@@ -1,8 +1,3 @@
-require 'mysql2-cs-bind'
-require 'sinatra/base'
-require 'omniauth-slack'
-require 'redcarpet'
-
 class Imasquare < Sinatra::Base
   use Rack::Session::Cookie,
     key: 'rack.session',
@@ -67,13 +62,6 @@ class Imasquare < Sinatra::Base
     require 'sinatra/reloader'
     require 'pry'
     register Sinatra::Reloader
-  end
-
-  get '/' do
-    redirect('/home', 303) if logined?
-
-    @users = db.query('SELECT nickname, avatar_url FROM users')
-    erb :index
   end
 
   get '/home' do

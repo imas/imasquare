@@ -18,17 +18,17 @@
     <div class='col s12 m6'>
       <div class='collection with-header'>
         <div class="collection-header"><h5>チーム一覧</h5></div>
-        <% if @entries.any? %>
+        <% if @teams.any? %>
           <% @teams.each do |team| %>
-            <a href="/teams/<%= team['id']%>" class='collection-item blue-text'>
+            <%= link_to team_path(team), class: 'collection-item blue-text' do %>
               <%= h(team['name']) %>
-              <% team['members'].each do |member| %>
+              <% team.users.find_each do |member| %>
                 <img src='<%= member['avatar_url'] %>' alt='<%= member['nickname'] %>' class='circle' style='width: 20px; height:20px; vertical-align: text-bottom;' />
               <% end %>
               <% if team['is_single'] == 1 %>
                 <span class="new badge blue lighten-2" data-badge-caption=''>個人チーム</span>
               <% end %>
-            </a>
+            <%- end %>
           <% end %>
         <% else %>
           <li class='collection-item'>

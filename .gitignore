@@ -30,4 +30,4 @@
 /config/master.key
 
 env.sh
-docker-database.yml
+config/database.yml

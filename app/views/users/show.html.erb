@@ -11,7 +11,7 @@
     <li><%= @user['nickname'] %></li>
     <li>所属しているチーム
       <ul>
-        <% @user_teams.each do |team| %>
+        <% @user.teams.find_each do |team| %>
           <li>
             <a href='/teams/<%= team['id']%>'><%= h(team['name']) %></a>
             <% if team['role'] == 'leader' %>

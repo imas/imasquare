@@ -19,7 +19,7 @@ end
 create_table "users_teams", id: :bigint, unsigned: true, force: :cascade, options: "ENGINE=InnoDB DEFAULT CHARSET=utf8mb4" do |t|
   t.string "user_id", limit: 31, null: false
   t.bigint "team_id", null: false, unsigned: true
-  t.string "role", limit: 127, null: false
+  t.string "role", limit: 127, default: 'member', null: false
   t.datetime "created_at", null: false
   t.datetime "updated_at", null: false
   t.index ["team_id"], name: "fk_team_id_on_users_teams"
