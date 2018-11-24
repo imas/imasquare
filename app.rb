@@ -1,8 +1,3 @@
-require 'mysql2-cs-bind'
-require 'sinatra/base'
-require 'omniauth-slack'
-require 'redcarpet'
-
 class Imasquare < Sinatra::Base
   use Rack::Session::Cookie,
     key: 'rack.session',
@@ -69,13 +64,6 @@ class Imasquare < Sinatra::Base
     register Sinatra::Reloader
   end
 
-  get '/' do
-    redirect('/home', 303) if logined?
-
-    @users = db.query('SELECT nickname, avatar_url FROM users')
-    erb :index
-  end
-
   get '/home' do
     query = <<~SQL
       SELECT teams.id, teams.name, teams.is_single, users.id AS leader_id, users.nickname AS leader_name FROM teams
@@ -90,7 +78,7 @@ class Imasquare < Sinatra::Base
       INNER JOIN teams ON ut.team_id = teams.id
       WHERE teams.id IN (?)
     SQL
-    team_member = db.xquery(query, @teams.map { |t| t['id'] })
+    team_member = @teams.any? ? db.xquery(query, @teams.map { |t| t['id'] }) : []
 
     @teams.each do |team|
       team['members'] = team_member.select { |tm| tm['team_id'] == team['id'] }
