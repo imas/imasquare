@@ -1,4 +1,4 @@
-FROM ruby:2.5.1
+FROM ruby:2.5.3
 
 ENV ENTRYKIT_VERSION 0.4.0
 RUN echo "deb http://http.debian.net/debian jessie-backports main" >> /etc/apt/sources.list \
